@@ -8,6 +8,10 @@ authors = ["xal9wiii4ik <xal9wiii4ik@yandex.ru>"]
 python = "^3.8"
 requests = "^2.26.0"
 Flask = "^2.0.2"
+pre-commit = "^2.16.0"
+mypy = "^0.930"
+flake8 = "^4.0.1"
+autoflake = "^1.4"
 
 [tool.poetry.dev-dependencies]
 
