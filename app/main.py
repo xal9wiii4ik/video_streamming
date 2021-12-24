@@ -16,3 +16,7 @@ app.config.from_mapping(
 @app.route('/')
 def index() -> tp.Tuple[Response, int]:
     return jsonify({'ok': 'Main page'}), 200
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", debug=True)
