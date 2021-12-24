@@ -1,0 +1,10 @@
+version: '3.7'
+
+services:
+  web:
+    build: .
+    ports:
+      - "80:5000"
+    command: python main.py
+    volumes:
+      - .:/usr/src/
