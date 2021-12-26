@@ -8,6 +8,8 @@ services:
     command: python main.py
     volumes:
       - .:/usr/src/
+    depends_on:
+      - db
 
   db:
     image: postgres:12.0-alpine
