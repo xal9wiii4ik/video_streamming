@@ -16,3 +16,5 @@ ENV PATH = "${PATH}:/root/.poetry/bin"
 
 RUN poetry config virtualenvs.create false
 RUN poetry install --no-dev
+
+CMD ['flask', 'db', 'upgrade']

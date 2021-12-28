@@ -29,7 +29,7 @@ def register_flask_application() -> Flask:
 
 def register_db(application: Flask) -> SQLAlchemy:
     """
-    Register db for applciation
+    Register db for appliciation
     Returns:
         current db session
     """
@@ -52,9 +52,11 @@ def models_initialization() -> None:
     db.init_app(app)
 
 
-app = register_flask_application()
+app: Flask = register_flask_application()
 db: SQLAlchemy = register_db(application=app)
 models_initialization()
 
 if __name__ == "__main__":
+    from account import app
+
     app.run(host="0.0.0.0", debug=True)
