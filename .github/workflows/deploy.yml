@@ -25,6 +25,27 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      - name: create .env file
+        uses: SpicyPizza/create-envfile@v1
+        with:
+          DATABASE: "postgresql"
+          SQL_HOST: "db"
+          SQL_USER: "flask_user"
+          SQL_PASSWORD: "1234567816"
+          SQL_DB_NAME: "video_streaming"
+          SQL_PORT: "5432"
+          SECRET_KEY: "146EtHWvxaInR3YB3d2Cdtn4emQcUBWw"
+          FLASK_APP: "main"
+          FLASK_ENV: "development"
+          directory: app/
+          file_name: .env
+
+      - name: create .env.db file
+        uses: SpicyPizza/create-envfile@v1
+        with:
+          POSTGRES_USER: "flask_user"
+          POSTGRES_PASSWORD: "1234567816"
+          POSTGRES_DB: "video_streaming"
       # Runs a single command using the runners shell
       - name: run docker
         shell: "docker-compose up -d --build"
