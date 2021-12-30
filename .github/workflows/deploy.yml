@@ -39,7 +39,9 @@ jobs:
         run: python get-poetry
 
       - name: activate poetry
-        run: PATH = "${PATH}:/root/.poetry/bin"
+        run: |
+          export PATH
+          PATH = "${PATH}:/root/.poetry/bin"
       - name: install dependencies
         run: |
           poetry config virtualenvs.create false
