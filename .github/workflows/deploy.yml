@@ -28,24 +28,24 @@ jobs:
       - name: create .env file
         uses: SpicyPizza/create-envfile@v1
         with:
-          DATABASE: "postgresql"
-          SQL_HOST: "db"
-          SQL_USER: "flask_user"
-          SQL_PASSWORD: "1234567816"
-          SQL_DB_NAME: "video_streaming"
-          SQL_PORT: "5432"
-          SECRET_KEY: "146EtHWvxaInR3YB3d2Cdtn4emQcUBWw"
-          FLASK_APP: "main"
-          FLASK_ENV: "development"
+          envkey_DATABASE: "postgresql"
+          envkey_SQL_HOST: "db"
+          envkey_SQL_USER: "flask_user"
+          envkey_SQL_PASSWORD: "1234567816"
+          envkey_SQL_DB_NAME: "video_streaming"
+          envkey_SQL_PORT: "5432"
+          envkey_SECRET_KEY: "146EtHWvxaInR3YB3d2Cdtn4emQcUBWw"
+          envkey_FLASK_APP: "main"
+          envkey_FLASK_ENV: "development"
           directory: app/
           file_name: .env
 
       - name: create .env.db file
         uses: SpicyPizza/create-envfile@v1
         with:
-          POSTGRES_USER: "flask_user"
-          POSTGRES_PASSWORD: "1234567816"
-          POSTGRES_DB: "video_streaming"
+          envkey_POSTGRES_USER: "flask_user"
+          envkey_POSTGRES_PASSWORD: "1234567816"
+          envkey_POSTGRES_DB: "video_streaming"
           directory: app/
           file_name: .env.db
       # Runs a single command using the runners shell
