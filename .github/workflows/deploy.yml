@@ -40,8 +40,7 @@ jobs:
 
       - name: activate poetry
         run: |
-          export PATH
-          PATH = "${PATH}:/root/.poetry/bin"
+          export PATH = "${PATH}:/root/.poetry/bin"
       - name: install dependencies
         run: |
           poetry config virtualenvs.create false
