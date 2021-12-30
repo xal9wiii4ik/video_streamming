@@ -46,6 +46,8 @@ jobs:
           POSTGRES_USER: "flask_user"
           POSTGRES_PASSWORD: "1234567816"
           POSTGRES_DB: "video_streaming"
+          directory: app/
+          file_name: .env.db
       # Runs a single command using the runners shell
       - name: run docker
         shell: "docker-compose up -d --build"
