@@ -21,35 +21,28 @@ jobs:
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
+    # .github/workflows/app.yaml
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - name: Check out repository code
+        uses: actions/checkout@v2
 
-      - name: create .env file
+      # Setup Python (faster than using Python container)
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
+
+      - name: download poetry
         run: |
-          touch .env
-          echo SECRET_KEY='146EtHWvxaInR3YB3d2Cdtn4emQcUBWw' >> .env
-          echo FLASK_APP='main' >> .env
-          echo FLASK_ENV='development' >> .env
-          echo DATABASE='postgresql' >> .env
-          echo SQL_HOST='db' >> .env
-          echo SQL_USER='flask_user' >> .env
-          echo SQL_PASSWORD='1234567816' >> .env
-          echo SQL_DB_NAME='video_streaming' >> .env
-          echo SQL_PORT='5432' >> .env
-          cat .env
+          curl https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py > get-poetry
+      - id: install poetry
+        run: python get-poetry
 
-      - name: create .env.db file
+      - name: activate poetry
+        run: PATH = "${PATH}:/root/.poetry/bin"
+      - name: install dependencies
         run: |
-          touch .env.db
-          echo POSTGRES_DB=video_streaming >> .env
-          echo POSTGRES_USER=flask_user >> .env
-          echo POSTGRES_PASSWORD=1234567816 >> .env
-          cat .env.db
-      # Runs a single command using the runners shell
-      - name: run docker
-        run: "docker-compose up -d --build"
-
-      # Runs a set of commands using the runners shell
-      - name: run tests
-        run: pytest app/tests
+          poetry config virtualenvs.create false
+          poetry install --no-dev
+#      - name: run tests
+#        run: poetry run pytest
