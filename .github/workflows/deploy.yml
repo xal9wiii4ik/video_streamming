@@ -37,7 +37,7 @@ jobs:
           envkey_SECRET_KEY: "146EtHWvxaInR3YB3d2Cdtn4emQcUBWw"
           envkey_FLASK_APP: "main"
           envkey_FLASK_ENV: "development"
-          directory: app/
+          directory: apps/
           file_name: .env
 
       - name: create .env.db file
@@ -46,7 +46,7 @@ jobs:
           envkey_POSTGRES_USER: "flask_user"
           envkey_POSTGRES_PASSWORD: "1234567816"
           envkey_POSTGRES_DB: "video_streaming"
-          directory: app/
+          directory: apps/
           file_name: .env.db
       # Runs a single command using the runners shell
       - name: run docker
