@@ -38,7 +38,6 @@ jobs:
       - name: Show file app/env.db content
         run: |
           pwd
-          cd app
           ls -la
           cat app/.env.db
       - name: Build the stack
@@ -50,4 +49,4 @@ jobs:
       - name: PreCommit install
         run: docker-compose exec -T web poetry add pylint mypy types-requests
       - run: docker-compose exec -T web pylint --disable=all --enable=unused-import $(git ls-files '*.py')
-      - run: docker-compose exec -T web mypy --strict $(git ls-files '*.py')
+#      - run: docker-compose exec -T web mypy --strict $(git ls-files '*.py')
