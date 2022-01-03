@@ -38,6 +38,7 @@ jobs:
       - name: Show file app/env.db content
         run: |
           pwd
+          cd app
           ls -la
           cat app/.env.db
       - name: Build the stack
