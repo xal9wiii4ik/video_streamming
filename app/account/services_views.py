@@ -3,18 +3,20 @@ import typing as tp
 # from account.models import Account
 # from main import db
 from account.schemas import RegisterUser
+from utils import make_password
 
 
 def validate_create_account_data(data: RegisterUser) -> tp.Tuple[tp.Union[RegisterUser, tp.Dict[str, str]], int]:
-    # from account.models import Account
+    from account.models import Account
     # from main import db
     if data.password == data.repeat_password:
-        # TODO add make_password
-        data.password = '123'
+        password = make_password(data.password)
+        data.password = password
+        print(Account.query.filter_by(username=data.username).all())
         return data, 200
     else:
         # TODO check how get with keyword
-        # print(Account.query.all())
+        # print(Account.query.filter())
         # TODO add raise exception or return error code
         return {'ValidationError': 'password should be equal to repeat_password'}, 400
 

@@ -1,7 +1,8 @@
+import typing as tp
 import logging
 import settings
 
-from flask import Flask
+from flask import Flask, jsonify, Response
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -56,6 +57,12 @@ app: Flask = register_flask_application()
 db: SQLAlchemy = register_db(application=app)
 models_initialization()
 # db.init_app(app)
+
+
+@app.route('/')
+def index() -> tp.Tuple[Response, int]:
+    return jsonify({'ok': 'Main page'}), 200
+
 
 if __name__ == "__main__":
     from account import app
