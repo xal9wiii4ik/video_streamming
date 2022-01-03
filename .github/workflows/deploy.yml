@@ -15,38 +15,21 @@ jobs:
       - uses: actions/checkout@v2
       - name: Create File app/.env
         run: |
-          echo SECRET_KEY='146EtHWvxaInR3YB3d2Cdtn4emQcUBWw' > app/.env
-          echo FLASK_APP='main' >> app/.env
-          echo FLASK_ENV='development' >> app/.env
+          echo SECRET_KEY='some_secret' > app/.env
 
           echo DATABASE='postgresql' >> app/.env
           echo SQL_HOST='db' >> app/.env
-          echo SQL_USER='flask_user' >> app/.env
-          echo SQL_PASSWORD='1234567816' >> app/.env
-          echo SQL_DB_NAME='video_streaming' >> app/.env
+          echo POSTGRES_USER='test_user' >> app/.env
+          echo POSTGRES_PASSWORD='test_password' >> app/.env
+          echo POSTGRES_DB='test_db' >> app/.env
           echo SQL_PORT='5432' >> app/.env
-      - name: Show file app/env content
-        run: |
-          pwd
-          ls -la
-          cat app/.env
-      - name: Create File app/env.db
-        run: |
-          echo POSTGRES_USER=flask_user > app/.env.db
-          echo POSTGRES_PASSWORD=1234567816 >> app/.env.db
-          echo POSTGRES_DB=video_streaming >> app/.env.db
-      - name: Show file app/env.db content
-        run: |
-          pwd
-          ls -la
-          cat app/.env.db
-      - name: Build the stack
+      - name: Build docker
         run: docker-compose up -d
       - name: Test
         env:
           COMPOSE_INTERACTIVE_NO_CLI: 1
         run: docker-compose exec -T web pytest
-      - name: PreCommit install
-        run: docker-compose exec -T web poetry add pylint mypy types-requests
-      - run: docker-compose exec -T web pylint --disable=all --enable=unused-import $(git ls-files '*.py')
+#      - name: PreCommit install
+#        run: docker-compose exec -T web poetry add pylint mypy types-requests
+#      - run: docker-compose exec -T web pylint --disable=all --enable=unused-import $(git ls-files '*.py')
 #      - run: docker-compose exec -T web mypy --strict $(git ls-files '*.py')
