@@ -15,6 +15,16 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build docker
         run: docker-compose up -d
+      - name: Create File app/.env
+        run: |
+          echo SECRET_KEY='some_secret' > app/.env
+
+          echo DATABASE='postgresql' >> app/.env
+          echo SQL_HOST='db' >> app/.env
+          echo POSTGRES_USER='test_user' >> app/.env
+          echo POSTGRES_PASSWORD='test_password' >> app/.env
+          echo POSTGRES_DB='test_db' >> app/.env
+          echo SQL_PORT='5432' >> app/.env
       - name: PreCommit install
         run: docker-compose exec -T web poetry add mypy types-requests flake8
       - run: docker-compose exec -T web flake8 .
