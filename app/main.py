@@ -55,6 +55,7 @@ def models_initialization() -> None:
 app: Flask = register_flask_application()
 db: SQLAlchemy = register_db(application=app)
 models_initialization()
+# db.init_app(app)
 
 if __name__ == "__main__":
     from account import app
