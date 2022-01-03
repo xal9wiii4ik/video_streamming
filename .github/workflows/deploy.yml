@@ -13,17 +13,33 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Create File .env
+      - name: Create File app/.env
         run: |
-          echo some data > .env
-      - name: Create File
-        run: |
-          echo some data > .env.db
-      - name: Show file content
+          echo SECRET_KEY='146EtHWvxaInR3YB3d2Cdtn4emQcUBWw' > app/.env
+          echo FLASK_APP='main' >> app/.env
+          echo FLASK_ENV='development' >> app/.env
+
+          echo DATABASE='postgresql' >> app/.env
+          echo SQL_HOST='db' >> app/.env
+          echo SQL_USER='flask_user' >> app/.env
+          echo SQL_PASSWORD='1234567816' >> app/.env
+          echo SQL_DB_NAME='video_streaming' >> app/.env
+          echo SQL_PORT='5432' >> app/.env
+      - name: Show file app/env content
         run: |
           pwd
           ls -la
-          cat .env.db
+          cat app/.env
+      - name: Create File app/env.db
+        run: |
+          echo POSTGRES_USER=flask_user > app/.env.db
+          echo POSTGRES_PASSWORD=1234567816 >> app/.env.db
+          echo POSTGRES_DB=video_streaming >> app/.env.db
+      - name: Show file app/env.db content
+        run: |
+          pwd
+          ls -la
+          cat app/.env.db
       - name: Build the stack
         run: docker-compose up -d
       - name: Test
