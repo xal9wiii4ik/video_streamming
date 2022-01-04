@@ -25,8 +25,8 @@ jobs:
           echo SQL_PORT='5432' >> app/.env
       - name: Build docker
         run: docker-compose up -d
-      - name: Install Pytest
-        run: docker-compose exec -T web poetry add pytest
+#      - name: Install Pytest
+#        run: docker-compose exec -T web poetry add pytest
       - name: Test
         env:
           COMPOSE_INTERACTIVE_NO_CLI: 1
