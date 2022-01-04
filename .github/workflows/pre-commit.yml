@@ -26,4 +26,4 @@ jobs:
       - name: Build docker
         run: docker-compose up -d
       - name: PreCommit Check
-        run: docker-compose exec -T pre-commit run --show-diff-on-failure --color=always --all-files
+        run: docker-compose exec -T web pre-commit run --show-diff-on-failure --color=always --all-files

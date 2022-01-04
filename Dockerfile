@@ -17,6 +17,7 @@ ENV PATH = "${PATH}:/root/.poetry/bin"
 RUN poetry config virtualenvs.create false
 
 FROM base as dev
+RUN apt-get install -y git
 RUN poetry install
 
 FROM base as prod
