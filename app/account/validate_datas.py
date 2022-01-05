@@ -23,6 +23,7 @@ def validate_register_account_data(data: RegisterUser) -> tp.Tuple[tp.Union[Regi
 
     # validate username
     accounts = Account.query.filter_by(username=data.username).all()
+    print(accounts)
     if any(accounts):
         return {'ValidationError': 'Account with this username already exist'}, 400
 

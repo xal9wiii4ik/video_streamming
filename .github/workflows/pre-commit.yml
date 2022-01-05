@@ -1,4 +1,4 @@
-name: CI
+name: PreCommit
 
 on:
   push:
@@ -25,7 +25,5 @@ jobs:
           echo SQL_PORT='5432' >> app/.env
       - name: Build docker
         run: docker-compose up -d
-      - name: Test
-        env:
-          COMPOSE_INTERACTIVE_NO_CLI: 1
-        run: docker-compose exec -T web pytest
+      - name: PreCommit Check
+        run: docker-compose exec -T web pre-commit run --show-diff-on-failure --color=always --all-files
