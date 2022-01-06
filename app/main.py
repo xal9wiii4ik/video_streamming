@@ -10,7 +10,7 @@ from flask_migrate import Migrate
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 
-def register_flask_application() -> Flask:
+def register_flask_application(config: tp.Any) -> Flask:
     """
     Register flask application
     Returns:
@@ -19,12 +19,15 @@ def register_flask_application() -> Flask:
 
     logging.info('Starting register application')
     app: Flask = Flask(__name__, instance_relative_config=True)
-    app.config.from_mapping(
-        SECRET_KEY=settings.SECRET_KEY,
-        SQLALCHEMY_DATABASE_URI=f'postgresql://{settings.SQL_USER}:{settings.SQL_PASSWORD}'
-                                f'@{settings.SQL_HOST}:{settings.SQL_PORT}/{settings.SQL_DB_NAME}',
-        SQLALCHEMY_TRACK_MODIFICATIONS=False
-    )
+    app.config.from_mapping(**config)
+    from account.views import auth_urls
+
+    app.register_blueprint(auth_urls)
+
+    @app.route('/')
+    def index() -> tp.Tuple[Response, int]:
+        return jsonify({'ok': 'Main page'}), 200
+
     return app
 
 
@@ -47,24 +50,16 @@ def models_initialization() -> None:
         db: current db state
     """
 
-    from account.models import db
-
     logging.info('Starting initialization of models')
+    app.app_context().push()
     db.init_app(app)
+    db.create_all()
 
 
-app: Flask = register_flask_application()
+app: Flask = register_flask_application(settings.DEVELOPMENT_CONFIGURATION)
 db: SQLAlchemy = register_db(application=app)
 models_initialization()
-# db.init_app(app)
-
-
-@app.route('/')
-def index() -> tp.Tuple[Response, int]:
-    return jsonify({'ok': 'Main page'}), 200
-
 
 if __name__ == "__main__":
-    from account import app
 
     app.run(host="0.0.0.0", debug=True)

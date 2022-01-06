@@ -1,1 +1,1 @@
-from .views import app
+from .views import auth_urls

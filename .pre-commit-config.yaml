@@ -26,6 +26,7 @@ repos:
         stages: [push, commit]
 
     -   id: flake8
+        args: ['--ignore=F401,F811']
         name: Run flake8
         entry: python -m flake8
         language: system

@@ -99,6 +99,10 @@ def generate_access_token_from_refresh(refresh_token: str) -> tp.Tuple[tp.Dict[s
 
     try:
         payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=[TOKEN_ALGORITHM])
+
+        if payload['sub'] != 'refresh':
+            return {'error': 'Refresh token is expected'}, 401
+
         access_token = create_token(token_type='access',
                                     data={
                                         'username': payload["username"],
@@ -138,4 +142,5 @@ def authenticate(func: tp.Any) -> tp.Any:
         except Exception:
             return {'error': 'Invalid token or token is expired'}, 401
         return func(*args, **kwargs)
+
     return wrapper

@@ -1,15 +1,17 @@
 import typing as tp
 
-from flask import Response, jsonify, request
+from flask import Response, jsonify, request, Blueprint
 from flask_pydantic import validate
 
 from account.schemas import RegisterUser, AccessToken, RefreshToken
 from account.services_views import create_new_account, create_tokens, generate_access_token_from_refresh, authenticate
 from account.validate_datas import validate_register_account_data, validate_access_token_data
-from main import app
 
 
-@app.route('/api/register/', methods=['POST'])
+auth_urls = Blueprint('auth', __name__, url_prefix='/auth')
+
+
+@auth_urls.route('/register/', methods=['POST'])
 @validate()
 def user_register(body: RegisterUser) -> tp.Tuple[Response, int]:
     """
@@ -24,7 +26,7 @@ def user_register(body: RegisterUser) -> tp.Tuple[Response, int]:
         return jsonify(data), status_code
 
 
-@app.route('/token/', methods=['POST'])
+@auth_urls.route('/token/', methods=['POST'])
 @validate()
 def get_tokens(body: AccessToken) -> tp.Tuple[Response, int]:
     """
@@ -39,14 +41,14 @@ def get_tokens(body: AccessToken) -> tp.Tuple[Response, int]:
         return jsonify(data), status_code
 
 
-@app.route('/token_refresh/', methods=['POST'])
+@auth_urls.route('/token_refresh/', methods=['POST'])
 @validate()
 def get_access_token_from_refresh(body: RefreshToken) -> tp.Tuple[Response, int]:
     data, status_code = generate_access_token_from_refresh(refresh_token=body.refresh_token)
     return jsonify(data), status_code
 
 
-@app.route('/check/', methods=['POST'])
+@auth_urls.route('/check/', methods=['POST'])
 @authenticate
 def check() -> tp.Tuple[Response, int]:
     # TODO ask
