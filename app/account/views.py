@@ -9,7 +9,6 @@ from account.validate_datas import validate_register_account_data, validate_acce
 from main import app
 
 
-# TODO add test
 @app.route('/api/register/', methods=['POST'])
 @validate()
 def user_register(body: RegisterUser) -> tp.Tuple[Response, int]:
