@@ -23,7 +23,13 @@ jobs:
           echo POSTGRES_PASSWORD='test_password_1' >> app/.env
           echo POSTGRES_DB='test_db_1' >> app/.env
           echo POSTGRES_PORT='5432' >> app/.env
+          echo ACCESS_TOKEN_EXPIRE_MINUTES=600 >> app/.env
+          echo REFRESH_TOKEN_EXPIRE_MINUTES=6000 >> app/.env
+          echo TOKEN_TYPE='Token' >> app/.env
+          echo TOKEN_ALGORITHM='HS256' >> app/.env
+          echo ACCESS_TOKEN_JWT_SUBJECT='access' >> app/.env
+          echo REFRESH_TOKEN_JWT_SUBJECT='refresh' >> app/.env
       - name: Build docker
-        run: docker-compose up
+        run: docker-compose up -d
       - name: PreCommit Check
         run: docker-compose exec -T web pre-commit run --show-diff-on-failure --color=always --all-files
