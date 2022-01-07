@@ -6,6 +6,8 @@ import jwt
 from datetime import timedelta, datetime
 
 from account.schemas import RegisterUser
+from account.serializers import account_serializer
+
 from settings import (
     SECRET_KEY,
     ACCESS_TOKEN_EXPIRE_MINUTES,
@@ -17,6 +19,7 @@ from settings import (
     DEFAULT_ACCESS_TOKEN_EXPIRE_MINUTES,
     DEFAULT_REFRESH_TOKEN_EXPIRE_MINUTES,
 )
+from utils import type_model_data
 
 
 def create_new_account(data: RegisterUser) -> None:
@@ -144,3 +147,63 @@ def authenticate(func: tp.Any) -> tp.Any:
         return func(*args, **kwargs)
 
     return wrapper
+
+
+def get_user_from_pk(pk: int) -> type_model_data:
+    """
+    Get user from pk
+    Args:
+        pk: current user pk
+    Return:
+        dict with user data
+    """
+
+    from account.models import Account
+
+    account = Account.query.get(pk)
+    return account_serializer(model_objects=account)
+
+
+def update_account(pk: int, data: tp.Dict[str, tp.Union[str, bool]]) -> None:
+    """
+    Update user account
+    Args:
+        pk: current user pk
+        data: update data
+    Return:
+        dict with user data
+    """
+
+    from main import db
+    from account.models import Account
+
+    Account.query.filter_by(id=pk).update(data)
+    db.session.commit()
+
+
+def remove_account(pk: int) -> None:
+    """
+    Remove account
+    Args:
+        pk: current user pk
+    """
+
+    from main import db
+    from account.models import Account
+
+    account = Account.query.get(pk)
+    db.session.delete(account)
+    db.session.commit()
+
+
+def get_account() -> type_model_data:
+    """
+    Get users
+    Return:
+        return list with user data
+    """
+
+    from account.models import Account
+
+    account = Account.query.all()
+    return account_serializer(model_objects=account, many=True)
