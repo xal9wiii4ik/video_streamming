@@ -20,9 +20,10 @@ def register_flask_application(config: tp.Any) -> Flask:
     logging.info('Starting register application')
     app: Flask = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(**config)
-    from account.views import auth_urls
+    from account.views import auth_urls, account_urls
 
     app.register_blueprint(auth_urls)
+    app.register_blueprint(account_urls)
 
     @app.route('/')
     def index() -> tp.Tuple[Response, int]:
