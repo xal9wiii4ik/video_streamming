@@ -21,14 +21,21 @@ def setup() -> tp.Any:
 
     password = make_password(password='password')
 
-    account = Account(username='username',
-                      password=password,
-                      is_staff=False,
-                      email='email_example@mail.ru',
-                      first_name='first_name',
-                      last_name='last_name')
+    account_1 = Account(username='username',
+                        password=password,
+                        is_staff=False,
+                        email='email_example@mail.ru',
+                        first_name='first_name',
+                        last_name='last_name')
+    account_2 = Account(username='username_2',
+                        password=password,
+                        is_staff=False,
+                        email='email_example2@mail.ru',
+                        first_name='first_name2',
+                        last_name='last_name2')
 
-    db.session.add(account)
+    db.session.add(account_1)
+    db.session.add(account_2)
     db.session.commit()
     yield app_1
     db.session.remove()
