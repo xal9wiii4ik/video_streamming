@@ -1,20 +1,20 @@
-from main import db
+from main import db as model
 
 
-class Account(db.Model):
+class Account(model.Model):
     """
     Model for table account
     """
 
     __tablename__ = 'account'
 
-    id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
-    username = db.Column(db.String(length=100), unique=True)
-    password = db.Column(db.String(length=500))
-    email = db.Column(db.String(length=100))
-    first_name = db.Column(db.String(length=100))
-    last_name = db.Column(db.String(length=100))
-    is_staff = db.Column(db.BOOLEAN())
+    id = model.Column(model.Integer(), primary_key=True, autoincrement=True)
+    username = model.Column(model.String(length=100), unique=True)
+    password = model.Column(model.String(length=500))
+    email = model.Column(model.String(length=100))
+    first_name = model.Column(model.String(length=100))
+    last_name = model.Column(model.String(length=100))
+    is_staff = model.Column(model.BOOLEAN())
 
     def __init__(self, username: str,
                  password: str,
