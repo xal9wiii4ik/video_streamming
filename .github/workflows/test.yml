@@ -1,4 +1,4 @@
-name: CI
+name: Test
 
 on:
   push:
@@ -18,11 +18,11 @@ jobs:
           echo SECRET_KEY='some_secret' > app/.env
 
           echo DATABASE='postgresql' >> app/.env
-          echo SQL_HOST='db' >> app/.env
+          echo POSTGRES_HOST='db' >> app/.env
           echo POSTGRES_USER='test_user' >> app/.env
           echo POSTGRES_PASSWORD='test_password' >> app/.env
           echo POSTGRES_DB='test_db' >> app/.env
-          echo SQL_PORT='5432' >> app/.env
+          echo POSTGRES_PORT='5432' >> app/.env
       - name: Build docker
         run: docker-compose up -d
       - name: Test
