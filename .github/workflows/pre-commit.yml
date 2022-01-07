@@ -1,0 +1,29 @@
+name: PreCommit
+
+on:
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ dev ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Create File app/.env
+        run: |
+          echo SECRET_KEY='some_secret' > app/.env
+
+          echo DATABASE='postgresql' >> app/.env
+          echo POSTGRES_HOST='db' >> app/.env
+          echo POSTGRES_USER='test_user' >> app/.env
+          echo POSTGRES_PASSWORD='test_password' >> app/.env
+          echo POSTGRES_DB='test_db' >> app/.env
+          echo POSTGRES_PORT='5432' >> app/.env
+      - name: Build docker
+        run: docker-compose up -d
+      - name: PreCommit Check
+        run: docker-compose exec -T web pre-commit run --show-diff-on-failure --color=always --all-files
