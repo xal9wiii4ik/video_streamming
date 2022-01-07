@@ -24,7 +24,7 @@ jobs:
           echo POSTGRES_DB='test_db_1' >> app/.env
           echo POSTGRES_PORT='5432' >> app/.env
       - name: Build docker
-        run: docker-compose up -d
+        run: docker-compose up -d --build
       - name: Test
         env:
           COMPOSE_INTERACTIVE_NO_CLI: 1

@@ -24,6 +24,6 @@ jobs:
           echo POSTGRES_DB='test_db_1' >> app/.env
           echo POSTGRES_PORT='5432' >> app/.env
       - name: Build docker
-        run: docker-compose up -d
+        run: docker-compose up -d --build
       - name: PreCommit Check
         run: docker-compose exec -T web pre-commit run --show-diff-on-failure --color=always --all-files
