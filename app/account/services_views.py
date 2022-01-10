@@ -22,9 +22,13 @@ from settings import (
 from utils import type_model_data
 
 
-def create_new_account(data: RegisterUser) -> None:
+def create_new_account(data: RegisterUser) -> tp.Dict[str, tp.Union[str, bool]]:
     """
     Create new account
+    Args:
+        data: register data
+    Return:
+        dict with account data
     """
 
     from main import db
@@ -38,6 +42,9 @@ def create_new_account(data: RegisterUser) -> None:
                           last_name=data.last_name)
     db.session.add(new_account)
     db.session.commit()
+    account_data = data.__dict__
+    account_data['id'] = new_account.id
+    return account_data
 
 
 def create_tokens(data: tp.Dict[str, str]) -> tp.Dict[str, str]:

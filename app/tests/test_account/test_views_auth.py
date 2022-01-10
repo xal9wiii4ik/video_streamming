@@ -11,8 +11,8 @@ def test_user_register(setup: tp.Any) -> None:
 
     data = {
         'username': 'xal9',
-        'password': '123',
-        'repeat_password': '123',
+        'password': '12345678',
+        'repeat_password': '12345678',
         'email': 'email@mail.ru',
         'first_name': 'first_name',
         'last_name': 'first_name'

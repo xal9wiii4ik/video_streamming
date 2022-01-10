@@ -60,15 +60,30 @@ class TestValidateRegisterAccountData:
                             last_name='123')
         return_data, status_code = validate_register_account_data(data=data)
         assert status_code == 400
-        assert return_data == {'ValidationError': 'Password should be equal to repeat_password'}
+        assert return_data == {'ValidationError': 'Password should be equal to repeat password'}
+
+    def test_password_less_then_8(self) -> None:
+        """
+        Test case not equal password and repeat password
+        """
+
+        data = RegisterUser(password='123',
+                            repeat_password='123',
+                            email='123',
+                            username='123',
+                            first_name='123',
+                            last_name='123')
+        return_data, status_code = validate_register_account_data(data=data)
+        assert status_code == 400
+        assert return_data == {'ValidationError': 'Password must be more than 8 characters'}
 
     def test_exist_username(self) -> None:
         """
         Test case exist username
         """
 
-        data = RegisterUser(password='123',
-                            repeat_password='123',
+        data = RegisterUser(password='12345678',
+                            repeat_password='12345678',
                             email='123',
                             username='username',
                             first_name='123',
@@ -82,14 +97,14 @@ class TestValidateRegisterAccountData:
         Test case for invalid email
         """
 
-        data = RegisterUser(password='123',
-                            repeat_password='123',
+        data = RegisterUser(password='12345678',
+                            repeat_password='12345678',
                             email='123',
                             username='123',
                             first_name='123',
                             last_name='123')
-        data_1 = RegisterUser(password='123',
-                              repeat_password='123',
+        data_1 = RegisterUser(password='12345678',
+                              repeat_password='12345678',
                               email='123@mailru',
                               username='123',
                               first_name='123',
@@ -107,8 +122,8 @@ class TestValidateRegisterAccountData:
         Test case for invalid email
         """
 
-        data = RegisterUser(password='123',
-                            repeat_password='123',
+        data = RegisterUser(password='12345678',
+                            repeat_password='12345678',
                             email='email_example@mail.ru',
                             username='username_1',
                             first_name='123',
@@ -122,8 +137,8 @@ class TestValidateRegisterAccountData:
         Test case for valid data
         """
 
-        data = RegisterUser(password='123',
-                            repeat_password='123',
+        data = RegisterUser(password='12345678',
+                            repeat_password='12345678',
                             email='new_email@mail.ru',
                             username='new_username',
                             first_name='123',

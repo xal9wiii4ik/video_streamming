@@ -26,6 +26,7 @@ class AccessToken(BaseModel):
 
     username: str
     password: str
+    user_pk: str = ''
 
 
 class RefreshToken(BaseModel):

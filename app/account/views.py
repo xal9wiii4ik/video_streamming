@@ -30,8 +30,8 @@ def user_register(body: RegisterUser) -> tp.Tuple[Response, int]:
 
     data, status_code = validate_register_account_data(data=body)
     if status_code == 200:
-        create_new_account(data=data)  # type: ignore
-        return jsonify({'ok': 'Account has been register'}), status_code
+        data = create_new_account(data=data)  # type: ignore
+        return jsonify(data), status_code
     else:
         return jsonify(data), status_code
 
@@ -45,8 +45,9 @@ def get_tokens(body: AccessToken) -> tp.Tuple[Response, int]:
 
     data, status_code = validate_access_token_data(data=body)
     if status_code == 200:
-        data = create_tokens(data={'username': data.username, 'password': data.password})  # type: ignore
-        return jsonify(data), 200
+        return_data = create_tokens(data={'username': data.username, 'password': data.password})  # type: ignore
+        return_data.update({'user_pk': data.user_pk})  # type: ignore
+        return jsonify(return_data), 200
     else:
         return jsonify(data), status_code
 

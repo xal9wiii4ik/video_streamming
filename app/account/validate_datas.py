@@ -17,13 +17,14 @@ def validate_register_account_data(data: RegisterUser) -> tp.Tuple[tp.Union[Regi
 
     # validate password
     if data.password != data.repeat_password:
-        return {'ValidationError': 'Password should be equal to repeat_password'}, 400
+        return {'ValidationError': 'Password should be equal to repeat password'}, 400
+    if len(data.password) < 8:
+        return {'ValidationError': 'Password must be more than 8 characters'}, 400
     password = make_password(data.password)
     data.password = password
 
     # validate username
     accounts = Account.query.filter_by(username=data.username).all()
-    print(accounts)
     if any(accounts):
         return {'ValidationError': 'Account with this username already exist'}, 400
 
@@ -56,6 +57,7 @@ def validate_access_token_data(data: AccessToken) -> tp.Tuple[tp.Union[AccessTok
 
     account = accounts[0]
     account_password = account.password
+    data.user_pk = account.id
 
     password = make_password(password=data.password)
     if password != account_password:

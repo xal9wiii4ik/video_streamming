@@ -4,6 +4,7 @@ import settings
 
 from flask import Flask, jsonify, Response
 
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
@@ -21,6 +22,7 @@ def register_flask_application(config: tp.Any) -> Flask:
 
     logging.info('Starting register application')
     app: Flask = Flask(__name__, instance_relative_config=True)
+    CORS(app)
     app.config.from_mapping(**config)
 
     app.register_blueprint(auth_urls)
