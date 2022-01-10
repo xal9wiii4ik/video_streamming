@@ -22,7 +22,6 @@ def register_flask_application(config: tp.Any) -> Flask:
 
     logging.info('Starting register application')
     app: Flask = Flask(__name__, instance_relative_config=True)
-    CORS(app)
     app.config.from_mapping(**config)
 
     app.register_blueprint(auth_urls)
@@ -31,6 +30,8 @@ def register_flask_application(config: tp.Any) -> Flask:
     @app.route('/')
     def index() -> tp.Tuple[Response, int]:
         return jsonify({'ok': 'Main page'}), 200
+
+    CORS(app)
 
     return app
 
