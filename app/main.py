@@ -57,6 +57,8 @@ def models_initialization() -> None:
         db: current db state
     """
 
+    # from account.models import Account
+
     logging.info('Starting initialization of models')
     app.app_context().push()
     db.init_app(app)
@@ -68,4 +70,6 @@ db: SQLAlchemy = register_db(application=app)
 models_initialization()
 
 if __name__ == "__main__":
+    from account.models import Account
+    from video.models import Video
     app.run(host="0.0.0.0", debug=True)

@@ -184,8 +184,10 @@ def update_account(pk: int, data: tp.Dict[str, tp.Union[str, bool]]) -> None:
     from main import db
     from account.models import Account
 
-    Account.query.filter_by(id=pk).update(data)
+    a = Account.query.filter_by(id=pk).update(data)
+    print(a)
     db.session.commit()
+    print(a)
 
 
 def remove_account(pk: int) -> None:
