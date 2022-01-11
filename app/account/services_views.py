@@ -129,10 +129,10 @@ def authenticate(func: tp.Any) -> tp.Any:
     """
 
     from flask import request, jsonify
-    from account.models import Account
 
     @wraps(func)
     def wrapper(*args: tp.Any, **kwargs: tp.Any) -> tp.Any:
+        from account.models import Account
         if request.headers.get('Authorization') is None:
             return jsonify({'error': 'Login required'})
 

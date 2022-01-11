@@ -19,6 +19,7 @@ def register_flask_application(config: tp.Any) -> Flask:
     """
 
     from account.views import auth_urls, account_urls
+    from video.views import video_urls
 
     logging.info('Starting register application')
     app: Flask = Flask(__name__, instance_relative_config=True)
@@ -26,6 +27,7 @@ def register_flask_application(config: tp.Any) -> Flask:
 
     app.register_blueprint(auth_urls)
     app.register_blueprint(account_urls)
+    app.register_blueprint(video_urls)
 
     @app.route('/')
     def index() -> tp.Tuple[Response, int]:
@@ -66,5 +68,4 @@ db: SQLAlchemy = register_db(application=app)
 models_initialization()
 
 if __name__ == "__main__":
-
     app.run(host="0.0.0.0", debug=True)
