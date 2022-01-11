@@ -5,8 +5,9 @@ import settings
 from flask import Flask, jsonify, Response
 
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+
+from models import db
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
@@ -38,18 +39,6 @@ def register_flask_application(config: tp.Any) -> Flask:
     return app
 
 
-def register_db(application: Flask) -> SQLAlchemy:
-    """
-    Register db for appliciation
-    Returns:
-        current db session
-    """
-
-    db: SQLAlchemy = SQLAlchemy()
-    Migrate(application, db, directory='migrations')
-    return db
-
-
 def models_initialization() -> None:
     """
     Initialize models
@@ -57,19 +46,15 @@ def models_initialization() -> None:
         db: current db state
     """
 
-    # from account.models import Account
-
     logging.info('Starting initialization of models')
+    Migrate(app, db, directory='migrations')
     app.app_context().push()
     db.init_app(app)
     db.create_all()
 
 
 app: Flask = register_flask_application(settings.DEVELOPMENT_CONFIGURATION)
-db: SQLAlchemy = register_db(application=app)
 models_initialization()
 
 if __name__ == "__main__":
-    from account.models import Account
-    from video.models import Video
     app.run(host="0.0.0.0", debug=True)

@@ -3,7 +3,7 @@ import pytest
 import settings
 import typing as tp
 
-from account.models import Account
+from models import Account
 from account.schemas import RegisterUser, AccessToken
 from account.validate_datas import validate_register_account_data, validate_access_token_data
 

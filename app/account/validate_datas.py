@@ -13,7 +13,7 @@ def validate_register_account_data(data: RegisterUser) -> tp.Tuple[tp.Union[Regi
         Error message or success data with code
     """
 
-    from account.models import Account
+    from models import Account
 
     # validate password
     if data.password != data.repeat_password:
@@ -49,7 +49,7 @@ def validate_access_token_data(data: AccessToken) -> tp.Tuple[tp.Union[AccessTok
         Error message or success data with code
     """
 
-    from account.models import Account
+    from models import Account
 
     accounts = Account.query.filter_by(username=data.username).all()
     if not any(accounts):

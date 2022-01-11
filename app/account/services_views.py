@@ -32,7 +32,7 @@ def create_new_account(data: RegisterUser) -> tp.Dict[str, tp.Union[str, bool]]:
     """
 
     from main import db
-    from account.models import Account
+    from models import Account
 
     new_account = Account(username=data.username,
                           password=data.password,
@@ -132,7 +132,7 @@ def authenticate(func: tp.Any) -> tp.Any:
 
     @wraps(func)
     def wrapper(*args: tp.Any, **kwargs: tp.Any) -> tp.Any:
-        from account.models import Account
+        from models import Account
         if request.headers.get('Authorization') is None:
             return jsonify({'error': 'Login required'})
 
@@ -165,7 +165,7 @@ def get_user_from_pk(pk: int) -> type_model_data:
         dict with user data
     """
 
-    from account.models import Account
+    from models import Account
 
     account = Account.query.get(pk)
     return account_serializer(model_objects=account)
@@ -182,7 +182,7 @@ def update_account(pk: int, data: tp.Dict[str, tp.Union[str, bool]]) -> None:
     """
 
     from main import db
-    from account.models import Account
+    from models import Account
 
     a = Account.query.filter_by(id=pk).update(data)
     print(a)
@@ -198,7 +198,7 @@ def remove_account(pk: int) -> None:
     """
 
     from main import db
-    from account.models import Account
+    from models import Account
 
     account = Account.query.get(pk)
     db.session.delete(account)
@@ -212,7 +212,7 @@ def get_account() -> type_model_data:
         return list with user data
     """
 
-    from account.models import Account
+    from models import Account
 
     account = Account.query.all()
     return account_serializer(model_objects=account, many=True)
