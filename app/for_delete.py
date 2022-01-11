@@ -1,2 +1,0 @@
-class Serializer:
-    pass
