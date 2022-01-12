@@ -5,6 +5,7 @@ from flask_pydantic import validate
 
 from account.permissions import account_permission
 from account.schemas import RegisterUser, AccessToken, RefreshToken, AccountData
+from account.serializers import account_serializer
 from account.services_views import (
     create_new_account,
     create_tokens,
@@ -16,6 +17,8 @@ from account.services_views import (
     get_account
 )
 from account.validate_datas import validate_register_account_data, validate_access_token_data
+from for_delete import func_rud_mixin
+from models import Account
 
 auth_urls = Blueprint('auth', __name__, url_prefix='/auth')
 account_urls = Blueprint('account', __name__, url_prefix='/api/account')
@@ -70,29 +73,34 @@ def user_detail(pk: int) -> tp.Tuple[Response, int]:
     Get user
     """
 
-    user_data, status_code = get_user_from_pk(pk=pk)
-    if status_code == 404:
-        return jsonify(user_data), status_code
-
-    has_permission = account_permission(user=request.user, request=request, pk=pk)  # type: ignore
-
-    if not has_permission:
-        return jsonify({'Error': 'You has not permissions to perform this action'}), 401
-
-    if request.method == 'PATCH':
-        data = AccountData(**request.json).__dict__  # type: ignore
-        for key in data.copy().keys():
-            if data[key] == '':
-                del data[key]
-        update_account(pk=pk, data=data)
-    elif request.method == 'DELETE':
-        remove_account(pk=pk)
-        return jsonify({}), 204
-    elif request.method == 'GET':
-        return jsonify(user_data), status_code
-
-    user_data, status_code = get_user_from_pk(pk=pk)
-    return jsonify(user_data), status_code
+    return func_rud_mixin(schema=AccountData,
+                          model=Account,
+                          request=request,
+                          pk=pk,
+                          serializer=account_serializer)
+    # user_data, status_code = get_user_from_pk(pk=pk)
+    # if status_code == 404:
+    #     return jsonify(user_data), status_code
+    #
+    # has_permission = account_permission(user=request.user, request=request, pk=pk)  # type: ignore
+    #
+    # if not has_permission:
+    #     return jsonify({'Error': 'You has not permissions to perform this action'}), 401
+    #
+    # if request.method == 'PATCH':
+    #     data = AccountData(**request.json).__dict__  # type: ignore
+    #     for key in data.copy().keys():
+    #         if data[key] == '':
+    #             del data[key]
+    #     update_account(pk=pk, data=data)
+    # elif request.method == 'DELETE':
+    #     remove_account(pk=pk)
+    #     return jsonify({}), 204
+    # elif request.method == 'GET':
+    #     return jsonify(user_data), status_code
+    #
+    # user_data, status_code = get_user_from_pk(pk=pk)
+    # return jsonify(user_data), status_code
 
 
 @account_urls.route('/', methods=['GET'])
