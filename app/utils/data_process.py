@@ -22,7 +22,8 @@ def make_password(password: str) -> str:
 
 def return_data_serializer(schema: tp.Any,
                            model_objects: tp.Any,
-                           many: bool = False) -> type_model_data:
+                           many: bool = False) -> tp.Union[tp.List[tp.Dict[str, tp.Union[str, bool]]],
+                                                           tp.Dict[str, tp.Union[str, bool]]]:
     """
     Serializer for account
     Args:
@@ -36,17 +37,17 @@ def return_data_serializer(schema: tp.Any,
     if not many:
         if model_objects is not None:
             object_id = model_objects.id
-            object_data = schema(**model_objects.__dict__).__dict__
+            object_data: tp.Dict[str, tp.Union[str, bool]] = schema(**model_objects.__dict__).__dict__
             object_data.update({'id': object_id})
-            return object_data, 200
-        return {}, 404
+            return object_data
+        return {}
     else:
         model_objects_data = []
         for model_object in model_objects:
             object_data = schema(**model_object.__dict__).__dict__
             object_data.update({'id': model_object.id})
             model_objects_data.append(object_data)
-        return model_objects_data, 200
+        return model_objects_data
 
 
 def validate_data_for_create_or_update(

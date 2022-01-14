@@ -38,7 +38,10 @@ def get_model_objects(model: tp.Any, schema: tp.Any) -> type_model_data:
     """
 
     account = model.query.all()
-    return return_data_serializer(schema=schema, model_objects=account, many=True)
+    serializer_data = return_data_serializer(schema=schema, model_objects=account, many=True)
+    if not any(serializer_data):
+        return serializer_data, 404
+    return serializer_data, 200
 
 
 def create_model_object(model: tp.Any, data: tp.Dict[str, tp.Union[str, bool]], schema: tp.Any) -> type_model_data:
@@ -57,7 +60,10 @@ def create_model_object(model: tp.Any, data: tp.Dict[str, tp.Union[str, bool]], 
     new_object = model(**data)
     db.session.add(new_object)
     db.session.commit()
-    return return_data_serializer(schema=schema, model_objects=new_object)
+    serializer_data = return_data_serializer(schema=schema, model_objects=new_object)
+    if not any(serializer_data):
+        return serializer_data, 404
+    return serializer_data, 200
 
 
 def detail_endpoint_mixin(schema: tp.Any,
@@ -113,7 +119,10 @@ def get_model_object_from_pk(model: tp.Any, pk: tp.Any, schema: tp.Any) -> type_
     """
 
     account = model.query.get(pk)
-    return return_data_serializer(schema=schema, model_objects=account)
+    serializer_data = return_data_serializer(schema=schema, model_objects=account)
+    if not any(serializer_data):
+        return serializer_data, 404
+    return serializer_data, 200
 
 
 def update_model_object(model: tp.Any, pk: tp.Any, data: tp.Any) -> None:
