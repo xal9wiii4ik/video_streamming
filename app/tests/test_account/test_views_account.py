@@ -1,41 +1,7 @@
 import json
 import typing as tp
 
-import pytest
-
-from tests.test_account.test_validate_data import setup
-
-
-@pytest.fixture(scope='class', autouse=True)
-def setup_token_1(setup: tp.Any) -> tp.Any:
-    """
-    Setup token data
-    """
-
-    data = {
-        'username': 'username',
-        'password': 'password'
-    }
-    json_data = json.dumps(data)
-
-    response = setup.test_client().post('/auth/token/', data=json_data, headers={'Content-Type': 'application/json'})
-    yield response.json['access_token']
-
-
-@pytest.fixture(scope='class', autouse=True)
-def setup_token_2(setup: tp.Any) -> tp.Any:
-    """
-    Setup token data
-    """
-
-    data = {
-        'username': 'username_2',
-        'password': 'password'
-    }
-    json_data = json.dumps(data)
-
-    response = setup.test_client().post('/auth/token/', data=json_data, headers={'Content-Type': 'application/json'})
-    yield response.json['access_token']
+from tests.setup_tests import *
 
 
 def test_get_user(setup: tp.Any, setup_token_1: tp.Any) -> None:

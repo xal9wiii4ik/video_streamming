@@ -3,17 +3,16 @@ import typing as tp
 from flask import Request
 
 
-def account_permission(user: tp.Any, request: Request, pk: int) -> bool:
+def account_permission(request: tp.Any, pk: tp.Optional[int] = None) -> bool:
     """
     Permission for account
     Args:
-        user: current user model
         request: current request
-        pk: current user pk
+        pk: current user pk if needed
     Return:
         has access or no
     """
 
     if request.method in ['PATCH', 'DELETE']:
-        return bool(pk == user.id)
+        return bool(pk == request.user.id)
     return True

@@ -1,6 +1,6 @@
 import typing as tp
 
-from tests.test_account.test_validate_data import setup
+from tests.setup_tests import *
 
 
 def test_index_route(setup: tp.Any) -> None:

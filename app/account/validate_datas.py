@@ -1,7 +1,7 @@
 import typing as tp
 
 from account.schemas import RegisterUser, AccessToken
-from utils import make_password
+from utils.data_process import make_password
 
 
 def validate_register_account_data(data: RegisterUser) -> tp.Tuple[tp.Union[RegisterUser, tp.Dict[str, str]], int]:

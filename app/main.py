@@ -48,9 +48,7 @@ def models_initialization() -> None:
 
     logging.info('Starting initialization of models')
     Migrate(app, db, directory='migrations')
-    # app.app_context().push()
     db.init_app(app)
-    # db.create_all()
 
 
 app: Flask = register_flask_application(settings.DEVELOPMENT_CONFIGURATION)
