@@ -3,7 +3,7 @@ import typing as tp
 from flask import Response, jsonify, request, Blueprint
 from flask_pydantic import validate
 
-from account.permissions import account_permission
+from utils.permissions import is_owner
 from account.schemas import RegisterUser, AccessToken, RefreshToken, AccountData
 from account.services_views import (
     create_new_account,
@@ -77,7 +77,7 @@ def user_detail(pk: int) -> tp.Tuple[Response, int]:
                                  request=request,
                                  pk=pk,
                                  data=data,
-                                 permissions=[account_permission])
+                                 permissions=[is_owner])
 
 
 @account_urls.route('/', methods=['GET'])

@@ -63,7 +63,7 @@ def create_model_object(model: tp.Any, data: tp.Dict[str, tp.Union[str, bool]], 
     serializer_data = return_data_serializer(schema=schema, model_objects=new_object)
     if not any(serializer_data):
         return serializer_data, 404
-    return serializer_data, 200
+    return serializer_data, 201
 
 
 def detail_endpoint_mixin(schema: tp.Any,

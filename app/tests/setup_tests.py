@@ -5,7 +5,7 @@ import pytest
 import settings
 import typing as tp
 
-from models import Account
+from models import Account, Video
 
 from main import register_flask_application, db
 
@@ -34,8 +34,21 @@ def setup() -> tp.Any:
                         first_name='first_name2',
                         last_name='last_name2')
 
+    video_1 = Video(title='title_1',
+                    description='description_1',
+                    bucket_path='bucket_path_1',
+                    account=account_1,
+                    account_id=1)
+    video_2 = Video(title='title_2',
+                    description='description_2',
+                    bucket_path='bucket_path_2',
+                    account=account_2,
+                    account_id=2)
+
     db.session.add(account_1)
     db.session.add(account_2)
+    db.session.add(video_1)
+    db.session.add(video_2)
     db.session.commit()
     yield app_1
     db.session.remove()

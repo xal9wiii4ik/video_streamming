@@ -3,9 +3,9 @@ import typing as tp
 from flask import Request
 
 
-def account_permission(request: tp.Any, pk: tp.Optional[int] = None) -> bool:
+def is_owner(request: tp.Any, pk: tp.Optional[int] = None) -> bool:
     """
-    Permission for account
+    Permission for is owner
     Args:
         request: current request
         pk: current user pk if needed

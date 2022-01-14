@@ -84,7 +84,7 @@ def test_update_user_not_owner(setup: tp.Any, setup_token_2: tp.Any) -> None:
 
 def test_get_users(setup: tp.Any, setup_token_1: tp.Any) -> None:
     """
-    Test update user
+    Test get users
     """
 
     response = setup.test_client().get('/api/account/', headers={
