@@ -168,7 +168,10 @@ def get_user_from_pk(pk: int) -> type_model_data:
     from account.models import Account
 
     account = Account.query.get(pk)
-    return account_serializer(model_objects=account)
+    data = account_serializer(model_objects=account)
+    if not any(data):
+        return data, 404
+    return data, 200
 
 
 def update_account(pk: int, data: tp.Dict[str, tp.Union[str, bool]]) -> None:
@@ -213,4 +216,4 @@ def get_account() -> type_model_data:
     from account.models import Account
 
     account = Account.query.all()
-    return account_serializer(model_objects=account, many=True)
+    return account_serializer(model_objects=account, many=True), 200

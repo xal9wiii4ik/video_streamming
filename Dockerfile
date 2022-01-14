@@ -22,5 +22,3 @@ RUN poetry install
 
 FROM base as prod
 RUN poetry install --no-dev
-
-CMD ['flask', 'db', 'upgrade']
