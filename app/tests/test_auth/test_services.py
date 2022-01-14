@@ -1,4 +1,4 @@
-from account.services_views import create_tokens, generate_access_token_from_refresh
+from auth.services_views import create_tokens, generate_access_token_from_refresh
 
 
 class TestRefreshToken:

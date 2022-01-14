@@ -19,7 +19,8 @@ def register_flask_application(config: tp.Any) -> Flask:
         current flask app
     """
 
-    from account.views import auth_urls, account_urls
+    from auth.views import auth_urls
+    from account.views import account_urls
     from video.views import video_urls
 
     logging.info('Starting register application')

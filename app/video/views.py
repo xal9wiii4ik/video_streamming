@@ -1,10 +1,9 @@
 import typing as tp
 
 from flask import Blueprint, Response, request
-from flask_pydantic import validate
 
 from utils.data_process import validate_data_for_create_or_update
-from account.services_views import authenticate
+from auth.services_views import authenticate
 from utils.endpoint_mixins import list_endpoint_mixin, detail_endpoint_mixin
 from models import Video
 from utils.permissions import is_owner

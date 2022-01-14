@@ -1,7 +1,5 @@
 import typing as tp
 
-from flask import Request
-
 
 def is_owner(request: tp.Any, pk: tp.Optional[int] = None) -> bool:
     """
