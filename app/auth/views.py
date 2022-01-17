@@ -3,6 +3,7 @@ import typing as tp
 from flask import Response, jsonify, Blueprint
 from flask_pydantic import validate
 
+import settings
 from account.schemas import RegisterUser, AccessToken, RefreshToken
 from auth.services_views import (
     create_new_account,
@@ -40,6 +41,7 @@ def get_tokens(body: AccessToken) -> tp.Tuple[Response, int]:
     if status_code == 200:
         return_data = create_tokens(data={'username': data.username, 'password': data.password})  # type: ignore
         return_data.update({'user_pk': data.user_pk})  # type: ignore
+        return_data.update({'access_token_expire': settings.ACCESS_TOKEN_EXPIRE_MINUTES})  # type: ignore
         return jsonify(return_data), 200
     else:
         return jsonify(data), status_code
@@ -53,4 +55,5 @@ def update_access_token(body: RefreshToken) -> tp.Tuple[Response, int]:
     """
 
     data, status_code = generate_access_token_from_refresh(refresh_token=body.refresh_token)
+    data.update({'access_token_expire': settings.ACCESS_TOKEN_EXPIRE_MINUTES})  # type: ignore
     return jsonify(data), status_code

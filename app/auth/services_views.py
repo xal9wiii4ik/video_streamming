@@ -111,12 +111,11 @@ def generate_access_token_from_refresh(refresh_token: str) -> tp.Tuple[tp.Dict[s
         if payload['sub'] != 'refresh':
             return {'error': 'Refresh token is expected'}, 401
 
-        access_token = create_token(token_type='access',
-                                    data={
-                                        'username': payload["username"],
-                                        'password': payload["password"]
-                                    })
-        return {'access_token': access_token}, 200
+        return_data = create_tokens(data={
+            'username': payload["username"],
+            'password': payload["password"]
+        })
+        return return_data, 200
     except Exception:
         return {'error': 'Invalid token or token is expired'}, 401
 
