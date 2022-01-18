@@ -22,3 +22,5 @@ RUN poetry install
 
 FROM base as prod
 RUN poetry install --no-dev
+
+CMD ["python", "app/main.py"]
