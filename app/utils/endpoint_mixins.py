@@ -8,7 +8,9 @@ from utils.data_process import type_model_data, return_data_serializer
 def list_endpoint_mixin(schema: tp.Any,
                         model: tp.Any,
                         request: tp.Any,
-                        data: tp.Any = None) -> tp.Tuple[Response, int]:
+                        data: tp.Any = None,
+                        search_fields: tp.Optional[tp.List[str]] = None,
+                        search_value: tp.Optional[str] = None) -> tp.Tuple[Response, int]:
     """
     Function mixin for read; create
     Args:
@@ -16,29 +18,49 @@ def list_endpoint_mixin(schema: tp.Any,
         model: current model
         request: current request
         data: current data for creating new object
+        search_fields: fields that will be searched for
+        search_value: search value
     Return:
         Response with status code
     """
 
     if request.method == 'GET':
-        model_data, status_code = get_model_objects(model=model, schema=schema)
+        model_data, status_code = get_model_objects(model=model,
+                                                    schema=schema,
+                                                    search_fields=search_fields,
+                                                    search_value=search_value)
     else:
         model_data, status_code = create_model_object(model=model, data=data, schema=schema)
     return jsonify(model_data), status_code
 
 
-def get_model_objects(model: tp.Any, schema: tp.Any) -> type_model_data:
+def get_model_objects(model: tp.Any,
+                      schema: tp.Any,
+                      search_fields: tp.Optional[tp.List[str]] = None,
+                      search_value: tp.Optional[str] = None) -> type_model_data:
     """
     Get all model objects
     Args:
         schema: current schema
         model: current model
+        search_fields: fields that will be searched for
+        search_value: search value
     Returns:
         dict or list with dicts with user data
     """
 
-    account = model.query.all()
-    serializer_data = return_data_serializer(schema=schema, model_objects=account, many=True)
+    model_objects = []
+
+    if search_fields is not None and search_value is not None:
+        for column in model.__table__.columns:
+            if column.name in search_fields:
+                model_objects = model.query.filter(column.contains(search_value)).all()
+            if any(model_objects):
+                break
+    else:
+        model_objects = model.query.all()
+
+    serializer_data = return_data_serializer(schema=schema, model_objects=model_objects, many=True)
     if not any(serializer_data):
         return serializer_data, 404
     return serializer_data, 200

@@ -40,4 +40,9 @@ def list_video() -> tp.Tuple[Response, int]:
 
     data = validate_data_for_create_or_update(schema=VideoDataCreate, request=request)
     data.update({'account_id': request.user.id})  # type: ignore
-    return list_endpoint_mixin(schema=VideoDataCreate, model=Video, request=request, data=data)
+    return list_endpoint_mixin(schema=VideoDataCreate,
+                               model=Video,
+                               request=request,
+                               data=data,
+                               search_fields=['description', 'title'],
+                               search_value=request.args.get('search'))
