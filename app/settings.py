@@ -1,4 +1,5 @@
 import os
+import typing as tp
 
 # FLASK SETTINGS
 SECRET_KEY: str = os.environ.get('SECRET_KEY')  # type: ignore
@@ -6,6 +7,7 @@ FLASK_APP: str = os.environ.get('FLASK_APP')  # type: ignore
 FLASK_ENV: str = os.environ.get('FLASK_ENV')  # type: ignore
 
 # DB SETTINGS
+DATABASE: tp.Optional[str] = os.environ.get('DATABASE')
 POSTGRES_HOST: str = os.environ.get('POSTGRES_HOST')  # type: ignore
 POSTGRES_USER: str = os.environ.get('POSTGRES_USER')  # type: ignore
 POSTGRES_PASSWORD: str = os.environ.get('POSTGRES_PASSWORD')  # type: ignore
@@ -32,7 +34,7 @@ REFRESH_TOKEN_JWT_SUBJECT: str = os.environ.get('REFRESH_TOKEN_JWT_SUBJECT')  # 
 # CONFIGS
 DEVELOPMENT_CONFIGURATION = {
     'SECRET_KEY': f'{SECRET_KEY}',
-    'SQLALCHEMY_DATABASE_URI': f'postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}'
+    'SQLALCHEMY_DATABASE_URI': f'{DATABASE}://{POSTGRES_USER}:{POSTGRES_PASSWORD}'
                                f'@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}',
     'SQLALCHEMY_TRACK_MODIFICATIONS': True
 }
