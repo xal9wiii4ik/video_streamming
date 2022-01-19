@@ -13,6 +13,8 @@ services:
       - .:/usr/src/
     depends_on:
       - db
+    env_file:
+      - ./app/.env
 
   db:
     image: postgres:12.0-alpine

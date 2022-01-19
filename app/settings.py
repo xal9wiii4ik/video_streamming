@@ -1,12 +1,5 @@
 import os
 
-from pathlib import Path
-
-from dotenv import load_dotenv
-
-env_path = Path('.env')
-load_dotenv(dotenv_path=env_path)
-
 # FLASK SETTINGS
 SECRET_KEY: str = os.environ.get('SECRET_KEY')  # type: ignore
 FLASK_APP: str = os.environ.get('FLASK_APP')  # type: ignore
