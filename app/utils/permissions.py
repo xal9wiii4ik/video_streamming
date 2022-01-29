@@ -1,16 +1,41 @@
 import typing as tp
 
+from werkzeug.local import LocalProxy
+from utils.exceptions import PermissionException
 
-def is_owner(request: tp.Any, pk: tp.Optional[int] = None) -> bool:
+
+SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
+
+
+class BasePermission:
     """
-    Permission for is owner
-    Args:
-        request: current request
-        pk: current user pk if needed
-    Return:
-        has access or no
+    A base class from which all permission classes should inherit.
     """
 
-    if request.method in ['PATCH', 'DELETE']:
-        return bool(pk == request.user.id)
-    return True
+    def __init__(self, request: tp.Any) -> None:
+        self.request = request
+
+    def has_permission(self) -> bool:
+        """
+        Return `True` if permission is granted, `False` otherwise.
+        """
+
+        return True
+
+    def has_object_permission(self, obj: tp.Any) -> bool:
+        """
+        Return `True` if permission is granted, `False` otherwise.
+        """
+
+        return True
+
+
+class IsAuthenticate(BasePermission):
+    """
+    Is Authenticate permission
+    """
+
+    def has_permission(self) -> bool:
+        if self.request.user is None:
+            raise PermissionException('Login is required')
+        return True

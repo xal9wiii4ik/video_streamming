@@ -31,6 +31,12 @@ TOKEN_ALGORITHM: tp.Optional[str] = os.environ.get('TOKEN_ALGORITHM')
 ACCESS_TOKEN_JWT_SUBJECT: tp.Optional[str] = os.environ.get('ACCESS_TOKEN_JWT_SUBJECT')
 REFRESH_TOKEN_JWT_SUBJECT: tp.Optional[str] = os.environ.get('REFRESH_TOKEN_JWT_SUBJECT')
 
+# AWS SETTINGS
+AWS_ACCESS_KEY_ID: tp.Optional[str] = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY: tp.Optional[str] = os.environ.get('AWS_SECRET_ACCESS_KEY')
+VIDEOS_BUCKET: tp.Optional[str] = os.environ.get('VIDEOS_BUCKET')
+BUCKET_REGION: tp.Optional[str] = os.environ.get('BUCKET_REGION')
+
 # CONFIGS
 DEVELOPMENT_CONFIGURATION = {
     'SECRET_KEY': f'{SECRET_KEY}',

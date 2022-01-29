@@ -1,48 +1,94 @@
 import typing as tp
 
-from flask import Blueprint, Response, request
+from flask import Blueprint, request
 
-from utils.data_process import validate_data_for_create_or_update
-from auth.services_views import authenticate
-from utils.endpoint_mixins import list_endpoint_mixin, detail_endpoint_mixin
-from models import Video
-from utils.permissions import is_owner
-from video.schemas import VideoDataUpdateView, VideoDataCreate
+from utils.mixins import ListCreateViewMixin, RetrieveViewMixin
+
+from models import Video, Account
+from utils.permissions import IsAuthenticate
+
+from video.permissions import IsAuthenticateCreateVideoPermission, IsOwnerOrReadOnlyVideoPermission
+from video.serializer import VideoModelSerializer
+from video.services_views import process_data_to_create_video
 
 video_urls = Blueprint('video', __name__, url_prefix='/api/video')
 
 
-@video_urls.route('/<int:pk>/', methods=['GET', 'PATCH', 'DELETE'])
-@authenticate
-def video_detail(pk: int) -> tp.Tuple[Response, int]:
+class UserVideosView(ListCreateViewMixin):
     """
-    Detail video
+    Getting user videos
     """
 
-    # TODO add back_path
-    data = validate_data_for_create_or_update(schema=VideoDataUpdateView,
-                                              request=request,
-                                              read_only_fields=['account_id', 'bucket_path'])
-    return detail_endpoint_mixin(schema=VideoDataUpdateView,
-                                 model=Video,
-                                 request=request,
-                                 pk=pk,
-                                 data=data,
-                                 permissions=[is_owner])
+    methods = ['GET']
+    model = Video
+    request = request
+    search_fields = ['description', 'title']
+    # TODO update according with soft delete
+    # search_query = [Video.account_id == request.user.id]
+    annotate_data = [
+        {
+            'model': Account,
+            'annotate_fields': ['username']
+        }
+    ]
+    serializer = VideoModelSerializer
+    permission_classes = [IsAuthenticate]
+
+    def update_search_query(self) -> None:
+        self.search_query.append(Video.account_id == self.request.user.id)    # type: ignore
 
 
-@video_urls.route('/', methods=['GET', 'POST'])
-@authenticate
-def list_video() -> tp.Tuple[Response, int]:
+class VideoRetrieveView(RetrieveViewMixin):
     """
-    List video
+    View for getting or update or remove video using pk
     """
 
-    data = validate_data_for_create_or_update(schema=VideoDataCreate, request=request)
-    data.update({'account_id': request.user.id})  # type: ignore
-    return list_endpoint_mixin(schema=VideoDataCreate,
-                               model=Video,
-                               request=request,
-                               data=data,
-                               search_fields=['description', 'title'],
-                               search_value=request.args.get('search'))
+    methods = ['GET', 'PATCH', 'DELETE']
+    model = Video
+    request = request
+    search_fields = ['description', 'title']
+    # TODO update according with soft delete
+    search_query = [Video.upload_date.is_not(None)]
+    annotate_data = [
+        {
+            'model': Account,
+            'annotate_fields': ['username']
+        }
+    ]
+    serializer = VideoModelSerializer
+    permission_classes = [IsOwnerOrReadOnlyVideoPermission]
+
+
+class VideoListCreateView(ListCreateViewMixin):
+    """
+    View for getting all videos or create video
+    """
+
+    methods = ['GET', 'POST']
+    model = Video
+    request = request
+    search_fields = ['description', 'title']
+    # TODO update upload_date change to soft delete
+    filter_query = [Video.upload_date.is_not(None)]
+    annotate_data = [
+        {
+            'model': Account,
+            'annotate_fields': ['username']
+        }
+    ]
+    permission_classes = [IsAuthenticateCreateVideoPermission]
+    serializer = VideoModelSerializer
+
+    def perform_create_update(self, serializer_data: tp.Dict[str, tp.Union[str, int, bool]]) -> tp.Dict[
+        str, tp.Union[str, int, bool]
+    ]:
+        serializer_data['account_id'] = self.request.user.id    # type: ignore
+
+        bucket_path = process_data_to_create_video(request=self.request)
+        serializer_data['bucket_path'] = bucket_path
+        return serializer_data
+
+
+video_urls.add_url_rule('/', view_func=VideoListCreateView.as_view('video_list'))
+video_urls.add_url_rule('/<int:pk>/', view_func=VideoRetrieveView.as_view('video_retrieve'))
+video_urls.add_url_rule('/user_videos/', view_func=UserVideosView.as_view('user_videos'))
