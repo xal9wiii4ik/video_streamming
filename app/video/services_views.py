@@ -15,6 +15,9 @@ def process_data_to_create_video(request: tp.Any) -> str:
         request: current request
     """
 
+    if request.files.get('file') is None:
+        raise SerializerValidationError({'file': 'Field is required'})
+
     file_bytes = request.files.get('file').read()
     file_info = fleep.get(file_bytes)
 

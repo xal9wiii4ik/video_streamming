@@ -43,7 +43,7 @@ class BaseMixinsMethodView(MethodView):
     search_value: tp.Optional[str] = None
     search_fields: tp.Optional[tp.List[str]] = None
 
-    _model_object: tp.Optional[tp.Any] = None
+    _model_object: tp.Any = None
     _annotate_fields: tp.Optional[tp.List[str]] = None
 
     def __init__(self, *args: tp.Any, **kwargs: tp.Any) -> None:
@@ -144,7 +144,7 @@ class BaseMixinsMethodView(MethodView):
         for data in self.annotate_data:  # type: ignore
             for column in data['model'].__table__.columns:  # type: ignore
                 if column.name in data['annotate_fields']:
-                    self.query = self.query.add_column(column.label(column.name))
+                    self.query = self.query.add_columns(column.label(column.name))
                     annotate_fields.append(column.name)
             self.query = self.query.join(data['model'])
         return annotate_fields
@@ -166,11 +166,12 @@ class BaseMixinsMethodView(MethodView):
             dict with data or list with dicts
         """
 
-        db.session.refresh(self._model_object)
         if self._annotate_fields is not None:
+            db.session.refresh(self._model_object[0])
             serializer = self.serializer(many=False, is_annotate=True, *self._model_object)
             model_data = serializer.get_annotate_model_objects_data(annotate_fields=self._annotate_fields)
         else:
+            db.session.refresh(self._model_object)
             serializer = self.serializer(many=False, **self._model_object.__dict__)
             model_data = serializer.get_model_objects_data()
         return model_data

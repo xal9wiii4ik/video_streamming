@@ -71,7 +71,7 @@ def permission_exception_handler(error: PermissionException) -> tp.Tuple[Respons
         json with status code
     """
 
-    return jsonify({'Error': error.message}), 400
+    return jsonify({'Error': error.message}), 401
 
 
 def empty_body_exception(error: EmptyBodyException) -> tp.Tuple[Response, int]:

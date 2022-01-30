@@ -60,14 +60,17 @@ class BaseSerializer(BaseModel):
 
         data = self.__dict__.copy()
         for key in self.__dict__:
-            if data[key] == '' or data[key] is None or key in self.read_only_fields or key in self.remove_fields:
+            is_key_in = bool(
+                key in self.read_only_fields or key in self.remove_fields or key in self.exclude_fields
+            )
+            if data[key] == '' or data[key] is None or is_key_in:
                 del data[key]
         return data
 
     def validate_data_before_get(self) -> serializer_data_type:
         data = self.__dict__.copy()
         for key in self.__dict__:
-            if key in self.remove_fields or key in self.exclude_fields or key in self.write_only_fields:
+            if key in self.remove_fields or key in self.write_only_fields:
                 del data[key]
         return data
 
