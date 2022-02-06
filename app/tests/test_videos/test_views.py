@@ -13,6 +13,17 @@ def test_get_video(setup: tp.Any, setup_token_1: tp.Any) -> None:
         'Authorization': f'Token {setup_token_1}'
     })
     assert response.status_code == 200
+    expected_data = {
+        'account_id': 1,
+        'bucket_path': 'bucket_path_1',
+        'description': 'description_1',
+        'id': 1,
+        'title': 'title_1',
+        'username': 'username'
+    }
+    response_data = response.json
+    del response_data['upload_date']
+    assert expected_data == response_data
 
 
 def test_get_video_not_found(setup: tp.Any, setup_token_1: tp.Any) -> None:
@@ -92,7 +103,28 @@ def test_get_videos(setup: tp.Any, setup_token_1: tp.Any) -> None:
         'Authorization': f'Token {setup_token_1}'
     })
     assert response.status_code == 200
-
+    expected_data = [
+        {
+            'account_id': 2,
+            'bucket_path': 'bucket_path_2',
+            'description': 'description_2',
+            'id': 2,
+            'title': 'title_2',
+            'username': 'username_2'
+        },
+        {
+            'account_id': 1,
+            'bucket_path': 'bucket_path_1',
+            'description': 'description_1',
+            'id': 1,
+            'title': 'title_1',
+            'username': 'username'
+        }
+    ]
+    response_data = response.json
+    for data in response_data:
+        del data['upload_date']
+    assert expected_data == response_data
 
 # def test_create_video(setup: tp.Any, setup_token_1: tp.Any) -> None:
 #     """
