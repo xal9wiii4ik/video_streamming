@@ -1,0 +1,63 @@
+import typing as tp
+
+from flask import request, Blueprint, jsonify, Response
+from flask.views import MethodView
+
+from account.permissions import IsOwnerOrReadOnlyAccountPermission
+from account.serializers import RegisterUserSerializer, AccountModelSerializer
+from account.services_views import create_new_account
+
+from models import Account
+
+from utils.data_process import make_password
+from utils.mixins import ListCreateViewMixin, RetrieveViewMixin
+from utils.permissions import IsAuthenticate
+from utils.serializers import serializer_data_type
+
+account_urls = Blueprint('account', __name__, url_prefix='/api/account')
+
+
+class RegisterAccountView(MethodView):
+    """ Register new user """
+
+    methods = ['POST']
+
+    def post(self) -> tp.Tuple[Response, int]:
+        serializer = RegisterUserSerializer(**request.json)  # type: ignore
+        serializer.update_remove_fields(fields=['repeat_password'])
+        serializer_data = serializer.validate_data_before_create()
+        model_data = create_new_account(data=serializer_data)
+        return jsonify(model_data), 200
+
+
+class AccountRetrieveView(RetrieveViewMixin):
+    """
+    View for getting or update or remove video using pk
+    """
+
+    methods = ['GET', 'PATCH', 'DELETE']
+    model = Account
+    request = request
+    serializer = AccountModelSerializer
+    permission_classes = [IsAuthenticate, IsOwnerOrReadOnlyAccountPermission]
+
+    def perform_create_update(self, serializer_data: serializer_data_type) -> serializer_data_type:
+        if serializer_data.get('password') is not None:
+            serializer_data['password'] = make_password(serializer_data['password'])    # type: ignore
+        return serializer_data
+
+
+class AccountListView(ListCreateViewMixin):
+    """
+    View for getting all accounts
+    """
+
+    methods = ['GET']
+    model = Account
+    request = request
+    serializer = AccountModelSerializer
+
+
+account_urls.add_url_rule('/register/', view_func=RegisterAccountView.as_view('register'))
+account_urls.add_url_rule('/', view_func=AccountListView.as_view('account-list'))
+account_urls.add_url_rule('/<int:pk>/', view_func=AccountRetrieveView.as_view('account-detail'))
