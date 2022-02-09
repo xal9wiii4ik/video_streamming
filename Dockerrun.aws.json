@@ -1,0 +1,12 @@
+{
+  "AWSEBDockerrunVersion": "1",
+  "Image": {
+    "Name": "651824940677.dkr.ecr.us-east-2.amazonaws.com/video_streaming:latest"
+  },
+  "Ports": [
+    {
+      "ContainerPort": 5000,
+      "HostPort": 80
+    }
+  ]
+}
