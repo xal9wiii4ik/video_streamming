@@ -49,19 +49,6 @@ def sort_error_handler(error: SortException) -> tp.Tuple[Response, int]:
     return jsonify({'Error': error.message}), 400
 
 
-def integrity_error_handler(error: IntegrityError) -> tp.Tuple[Response, int]:
-    """
-    Except IntegrityError
-    Args:
-        error: current error
-    Returns:
-        json with status code
-    """
-
-    # TODO update handler
-    return jsonify({'Error': 'Error with creating object'}), 500
-
-
 def permission_exception_handler(error: PermissionException) -> tp.Tuple[Response, int]:
     """
     Except PermissionException

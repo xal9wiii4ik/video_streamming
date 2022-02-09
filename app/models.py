@@ -16,7 +16,7 @@ class Account(db.Model):
     email = db.Column(db.String(length=100))
     first_name = db.Column(db.String(length=100))
     last_name = db.Column(db.String(length=100))
-    is_staff = db.Column(db.BOOLEAN(), default=False)
+    is_staff = db.Column(db.Boolean(), default=False)
 
 
 class Video(db.Model):
@@ -30,4 +30,4 @@ class Video(db.Model):
     bucket_path = db.Column(db.String(length=100))
     account_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
     account = db.relationship('Account', backref=db.backref('video', lazy=True, cascade="all, delete-orphan"))
-    upload_date = db.Column(db.DateTime, default=datetime.datetime.now)
+    upload_time = db.Column(db.DateTime, default=datetime.datetime.now)

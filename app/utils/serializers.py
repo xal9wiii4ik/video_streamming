@@ -81,8 +81,7 @@ class BaseModelSerializer(BaseSerializer):
     """
 
     def __init__(self, *args: tp.Any, **kwargs: tp.Any) -> None:
-        cls = self.__class__
-        for column in self.model.__table__.columns:
+        for column in self.model.__table__.columns:  # type: ignore
             column_type = type(column.__dict__['type'])
             if column_type in SQLALCHEMY_TYPE_TRANSLATE:
                 column_translate_type = SQLALCHEMY_TYPE_TRANSLATE[column_type]
@@ -91,64 +90,64 @@ class BaseModelSerializer(BaseSerializer):
             else:
                 column_translate_type = None
 
-            cls.__fields__.update(
+            self.__fields__.update(
                 {column.name: ModelField.infer(name=column.name,
                                                value='',
                                                annotation=column_translate_type,
                                                class_validators=None,
-                                               config=cls.__config__)
+                                               config=self.__config__)
                  })
 
-        cls.__fields__.update(
+        self.__fields__.update(
             {'many': ModelField.infer(name='many',
                                       value=True if kwargs.get('many') else False,
                                       annotation=bool,
                                       class_validators=None,
-                                      config=cls.__config__)
+                                      config=self.__config__)
              })
-        cls.__fields__.update(
+        self.__fields__.update(
             {'method': ModelField.infer(name='method',
                                         value=kwargs.get('method') if kwargs.get('method') else 'GET',
                                         annotation=str,
                                         class_validators=None,
-                                        config=cls.__config__)
+                                        config=self.__config__)
              })
-        cls.__fields__.update(
+        self.__fields__.update(
             {'is_annotate': ModelField.infer(name='is_annotate',
                                              value=True if kwargs.get('is_annotate') else False,
                                              annotation=bool,
                                              class_validators=None,
-                                             config=cls.__config__)
+                                             config=self.__config__)
              })
 
         if kwargs.get('many'):
-            cls.__fields__.update(
+            self.__fields__.update(
                 {'multiple_data': ModelField.infer(name='multiple_data',
                                                    value=args,
                                                    annotation=tp.List[tp.Any],
                                                    class_validators=None,
-                                                   config=cls.__config__)
+                                                   config=self.__config__)
                  })
         if kwargs.get('is_annotate'):
-            cls.__fields__.update(
+            self.__fields__.update(
                 {'data': ModelField.infer(name='data',
                                           value=args,
                                           annotation=serializer_data_type,
                                           class_validators=None,
-                                          config=cls.__config__)
+                                          config=self.__config__)
                  })
         else:
-            cls.__fields__.update(
+            self.__fields__.update(
                 {'data': ModelField.infer(name='data',
                                           value=kwargs,
                                           annotation=serializer_data_type,
                                           class_validators=None,
-                                          config=cls.__config__)
+                                          config=self.__config__)
                  })
         super().__init__(**kwargs)
 
     @root_validator
-    def validate(cls, values: serializer_data_type) -> serializer_data_type:
+    def validate(cls, values: serializer_data_type) -> serializer_data_type:  # type: ignore
         if values.get('method') in ['POST', 'PATCH', 'PUT']:
             for value in values:
                 if values.get('method') == 'PATCH' and (values[value] is None or values[value] == ''):
@@ -166,14 +165,14 @@ class BaseModelSerializer(BaseSerializer):
             dict with data or list with dicts
         """
 
-        if not self.many:
+        if not self.many:  # type: ignore
             object_data = self.validate_data_before_get()
             return object_data
         else:
             model_objects_data = []
             cls = self.__class__
 
-            for data in self.multiple_data:
+            for data in self.multiple_data:  # type: ignore
                 serializer_object = cls(**data.__dict__)
                 object_data = serializer_object.validate_data_before_get()
                 model_objects_data.append(object_data)
@@ -192,17 +191,17 @@ class BaseModelSerializer(BaseSerializer):
 
         cls = self.__class__
 
-        if not self.many:
-            serializer_object = cls(**self.data[0].__dict__)
+        if not self.many:  # type: ignore
+            serializer_object = cls(**self.data[0].__dict__)  # type: ignore
             object_data = serializer_object.validate_data_before_get()
 
             for index, annotate_field in enumerate(annotate_fields):
-                object_data.update({annotate_field: self.data[index + 1]})
+                object_data.update({annotate_field: self.data[index + 1]})  # type: ignore
             return object_data
         else:
             model_objects_data = []
 
-            for data in self.multiple_data:
+            for data in self.multiple_data:  # type: ignore
                 serializer_object = cls(**data[0].__dict__)
                 object_data = serializer_object.validate_data_before_get()
 
