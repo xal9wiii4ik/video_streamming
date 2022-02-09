@@ -2,7 +2,6 @@ import typing as tp
 import logging
 
 from pydantic import ValidationError
-from sqlalchemy.exc import IntegrityError
 
 import settings
 
@@ -10,15 +9,12 @@ from flask import Flask, jsonify, Response
 from flask_cors import CORS
 from flask_migrate import Migrate
 
-from utils.before_request import validate_body_for_update_create, authenticate
-
 from models import db
 
 from utils.error_handlers import (
     validation_error_handler,
     limit_offset_error_handler,
     sort_error_handler,
-    integrity_error_handler,
     permission_exception_handler,
     empty_body_exception,
     serializer_validation_error,
@@ -50,13 +46,12 @@ def register_flask_application(config: tp.Any) -> Flask:
     app.config.from_mapping(**config)
 
     # TODO it can be update to automatic
-    app.before_request(authenticate)
-    app.before_request(validate_body_for_update_create)
+    # app.before_request(authenticate)
+    # app.before_request(validate_body_for_update_create)
 
     app.register_error_handler(ValidationError, validation_error_handler)
     app.register_error_handler(LimitOffsetError, limit_offset_error_handler)
     app.register_error_handler(SortException, sort_error_handler)
-    app.register_error_handler(IntegrityError, integrity_error_handler)
     app.register_error_handler(PermissionException, permission_exception_handler)
     app.register_error_handler(EmptyBodyException, empty_body_exception)
     app.register_error_handler(SerializerValidationError, serializer_validation_error)
@@ -66,16 +61,12 @@ def register_flask_application(config: tp.Any) -> Flask:
     app.register_blueprint(account_urls)
     app.register_blueprint(video_urls)
 
-    @app.route('/', methods=["GET", "POST"])
-    def index() -> tp.Tuple[Response, int]:
-        return jsonify({'ok': 'Main page'}), 200
-
     CORS(app)
 
     return app
 
 
-def models_initialization() -> None:
+def initialize_models() -> None:
     """
     Initialize models
     Args:
@@ -88,7 +79,7 @@ def models_initialization() -> None:
 
 
 app: Flask = register_flask_application(settings.DEVELOPMENT_CONFIGURATION)
-models_initialization()
+initialize_models()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)
