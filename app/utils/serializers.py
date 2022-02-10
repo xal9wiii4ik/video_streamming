@@ -3,10 +3,10 @@ import sqlalchemy
 import decimal
 import datetime
 
-from flask_sqlalchemy import DefaultMeta
-
 from pydantic import BaseModel, constr, root_validator
 from pydantic.fields import ModelField
+
+from utils.exceptions import SerializerValidationError
 
 SQLALCHEMY_TYPE_TRANSLATE = {
     sqlalchemy.sql.sqltypes.BigInteger: int,
@@ -35,11 +35,13 @@ class BaseSerializer(BaseModel):
     """
 
     remove_fields: tp.List[str] = ['read_only_fields', 'multiple_data', 'many',
-                                   'write_only_fields', 'method', 'remove_fields', '_sa_instance_state',
-                                   'data', 'is_annotate', 'exclude_fields']
+                                   'write_only_fields', 'method',
+                                   'remove_fields', '_sa_instance_state', 'data', 'is_annotate', 'exclude_fields',
+                                   'required_model_fields']
     read_only_fields = []  # type: ignore
     exclude_fields = []  # type: ignore
     write_only_fields = []  # type: ignore
+    required_model_fields = []  # type: ignore
 
     def update_remove_fields(self, fields: tp.List[str]) -> None:
         """
@@ -63,6 +65,8 @@ class BaseSerializer(BaseModel):
             is_key_in = bool(
                 key in self.read_only_fields or key in self.remove_fields or key in self.exclude_fields
             )
+            if (data[key] == '' or data[key] is None) and key in self.required_model_fields:
+                raise SerializerValidationError({key: f'{key} must be not empty'})
             if data[key] == '' or data[key] is None or is_key_in:
                 del data[key]
         return data
@@ -81,6 +85,7 @@ class BaseModelSerializer(BaseSerializer):
     """
 
     def __init__(self, *args: tp.Any, **kwargs: tp.Any) -> None:
+        required_model_fields = []
         for column in self.model.__table__.columns:  # type: ignore
             column_type = type(column.__dict__['type'])
             if column_type in SQLALCHEMY_TYPE_TRANSLATE:
@@ -92,11 +97,13 @@ class BaseModelSerializer(BaseSerializer):
 
             self.__fields__.update(
                 {column.name: ModelField.infer(name=column.name,
-                                               value='',
+                                               value=None,
                                                annotation=column_translate_type,
                                                class_validators=None,
                                                config=self.__config__)
                  })
+            if not column.nullable and not column.primary_key:
+                required_model_fields.append(column.name)
 
         self.__fields__.update(
             {'many': ModelField.infer(name='many',
@@ -145,6 +152,7 @@ class BaseModelSerializer(BaseSerializer):
                                           config=self.__config__)
                  })
         super().__init__(**kwargs)
+        [self.required_model_fields.append(field) for field in required_model_fields]  # type: ignore
 
     @root_validator
     def validate(cls, values: serializer_data_type) -> serializer_data_type:  # type: ignore
