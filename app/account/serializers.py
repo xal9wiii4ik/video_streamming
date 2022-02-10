@@ -23,7 +23,7 @@ class RegisterUserSerializer(BaseSerializer):
 
         accounts = Account.query.filter_by(username=value).all()
         if any(accounts):
-            raise SerializerValidationError({'username': 'Account with this username already exist'})
+            raise SerializerValidationError({'error': 'Account with this username already exist'})
         return value
 
     @validator('email')
@@ -35,7 +35,7 @@ class RegisterUserSerializer(BaseSerializer):
 
         accounts = Account.query.filter_by(email=value).all()
         if any(accounts):
-            raise SerializerValidationError({'email': 'Account with this email already exist'})
+            raise SerializerValidationError({'error': 'Account with this email already exist'})
 
         return value
 
@@ -46,10 +46,10 @@ class RegisterUserSerializer(BaseSerializer):
         """
 
         if len(data['password']) <= 8:  # type: ignore
-            raise SerializerValidationError({'password': 'Password must be more than 8 characters'})
+            raise SerializerValidationError({'error': 'Password must be more than 8 characters'})
 
         if data['password'] != data['repeat_password']:
-            raise SerializerValidationError({'repeat_password': 'Password should be equal to repeat password'})
+            raise SerializerValidationError({'error': 'Password should be equal to repeat password'})
 
         password = make_password(data['password'])  # type: ignore
         data['password'] = password
@@ -70,15 +70,15 @@ class AccountModelSerializer(BaseModelSerializer):
         from models import Account
 
         if value.find('@') == -1 or value.find('.') == -1:
-            raise ValueError('Invalid email')
+            raise SerializerValidationError({'error': 'Invalid email'})
 
         accounts = Account.query.filter_by(email=value).all()
         if any(accounts):
-            raise ValueError('Account with this email already exist')
+            raise SerializerValidationError({'error': 'Account with this email already exist'})
 
         return value
 
     def validate_password(self, value: str) -> str:
         if len(value) <= 8:
-            raise SerializerValidationError({'password': 'Password must be more than 8 characters'})
+            raise SerializerValidationError({'error': 'Password must be more than 8 characters'})
         return value

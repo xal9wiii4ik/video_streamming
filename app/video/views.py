@@ -86,6 +86,7 @@ class VideoListCreateView(ListCreateViewMixin):
         return data
 
     def perform_create_update(self, serializer_data: serializer_data_type) -> serializer_data_type:
+        serializer_data['account_id'] = self.request.user.id  # type: ignore
         bucket_path = process_data_to_create_video(request=self.request)
         serializer_data['bucket_path'] = bucket_path
         return serializer_data

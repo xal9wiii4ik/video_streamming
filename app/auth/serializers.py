@@ -27,7 +27,7 @@ class AccessTokenSerializer(BaseSerializer):
 
         accounts = Account.query.filter_by(username=data.get('username')).all()
         if not any(accounts):
-            raise SerializerValidationError({'username': 'Account does not exist'})
+            raise SerializerValidationError({'error': 'Account does not exist'})
 
         account = accounts[0]
         account_password = account.password
@@ -35,7 +35,7 @@ class AccessTokenSerializer(BaseSerializer):
 
         password = make_password(password=data.get('password'))  # type: ignore
         if password != account_password:
-            raise SerializerValidationError({'password': 'Invalid password'})
+            raise SerializerValidationError({'error': 'Invalid password'})
         return data
 
 
