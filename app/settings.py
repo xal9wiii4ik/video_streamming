@@ -8,11 +8,11 @@ FLASK_ENV: tp.Optional[str] = os.environ.get('FLASK_ENV')
 
 # DB SETTINGS
 DATABASE: tp.Optional[str] = os.environ.get('DATABASE')
-POSTGRES_HOST: tp.Optional[str] = os.environ.get('POSTGRES_HOST')
-POSTGRES_USER: tp.Optional[str] = os.environ.get('POSTGRES_USER')
-POSTGRES_PASSWORD: tp.Optional[str] = os.environ.get('POSTGRES_PASSWORD')
-POSTGRES_DB: tp.Optional[str] = os.environ.get('POSTGRES_DB')
-POSTGRES_PORT: tp.Optional[str] = os.environ.get('POSTGRES_PORT')
+POSTGRES_HOST: tp.Optional[str] = os.environ.get('RDS_HOSTNAME')
+POSTGRES_USER: tp.Optional[str] = os.environ.get('RDS_USERNAME')
+POSTGRES_PASSWORD: tp.Optional[str] = os.environ.get('RDS_PASSWORD')
+POSTGRES_DB: tp.Optional[str] = os.environ.get('RDS_DB_NAME')
+POSTGRES_PORT: tp.Optional[str] = os.environ.get('RDS_PORT')
 
 # TEST DB SETTINGS
 TEST_POSTGRES_HOST: tp.Optional[str] = 'db-test'

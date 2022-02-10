@@ -187,6 +187,13 @@ class BaseMixinsMethodView(MethodView):
 
         return serializer_data
 
+    def perform_validate(self, data: serializer_data_type) -> serializer_data_type:
+        """
+        Perform validate data for creating or updating
+        """
+
+        return data
+
 
 class ListCreateViewMixin(BaseMixinsMethodView):
     """
@@ -215,6 +222,7 @@ class ListCreateViewMixin(BaseMixinsMethodView):
 
     def post(self) -> tp.Tuple[Response, int]:
         data = self.request.json if self.request.json is not None else self.request.form.copy()
+        data = self.perform_validate(data=data)
         serializer = self.serializer(method='POST', **data)
         serializer_data = serializer.validate_data_before_create()
         serializer_data = self.perform_create_update(serializer_data=serializer_data)

@@ -9,6 +9,7 @@ services:
     ports:
       - "80:5000"
     command: python main.py
+    entrypoint: ./entrypoint.sh
     volumes:
       - .:/usr/src/
     depends_on:

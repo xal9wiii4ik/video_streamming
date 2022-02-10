@@ -121,6 +121,15 @@ def test_get_user(setup: tp.Any, setup_token_1: tp.Any) -> None:
         'Authorization': f'Token {setup_token_1}'
     })
     assert response.status_code == 200
+    expected_data = {
+        'email': 'email_example@mail.ru',
+        'first_name': 'first_name',
+        'id': 1,
+        'is_staff': False,
+        'last_name': 'last_name',
+        'username': 'username'
+    }
+    assert expected_data == response.json
 
 
 def test_get_user_not_found(setup: tp.Any, setup_token_1: tp.Any) -> None:
@@ -199,3 +208,22 @@ def test_get_users(setup: tp.Any, setup_token_1: tp.Any) -> None:
         'Authorization': f'Token {setup_token_1}'
     })
     assert response.status_code == 200
+    expected_data = [
+        {
+            'email': 'email_example2@mail.ru',
+            'first_name': 'first_name2',
+            'id': 2,
+            'is_staff': False,
+            'last_name': 'last_name2',
+            'username': 'username_2'
+        },
+        {
+            'email': 'email_example@mail.ru',
+            'first_name': 'first_name',
+            'id': 1,
+            'is_staff': False,
+            'last_name': 'last_name',
+            'username': 'username'
+        }
+    ]
+    assert expected_data == response.json

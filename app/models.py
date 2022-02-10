@@ -11,12 +11,12 @@ class Account(db.Model):
     """
 
     id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
-    username = db.Column(db.String(length=100), unique=True)
-    password = db.Column(db.String(length=500))
-    email = db.Column(db.String(length=100))
-    first_name = db.Column(db.String(length=100))
-    last_name = db.Column(db.String(length=100))
-    is_staff = db.Column(db.BOOLEAN(), default=False)
+    username = db.Column(db.String(length=100), unique=True, nullable=False)
+    password = db.Column(db.String(length=500), nullable=False)
+    email = db.Column(db.String(length=100), nullable=False)
+    first_name = db.Column(db.String(length=100), nullable=False)
+    last_name = db.Column(db.String(length=100), nullable=False)
+    is_staff = db.Column(db.Boolean(), default=False)
 
 
 class Video(db.Model):
@@ -25,9 +25,9 @@ class Video(db.Model):
     """
 
     id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
-    title = db.Column(db.String(length=50))
-    description = db.Column(db.String(length=1020))
-    bucket_path = db.Column(db.String(length=100))
+    title = db.Column(db.String(length=50), nullable=False)
+    description = db.Column(db.String(length=1020), nullable=False)
+    bucket_path = db.Column(db.String(length=100), nullable=False)
     account_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
     account = db.relationship('Account', backref=db.backref('video', lazy=True, cascade="all, delete-orphan"))
-    upload_date = db.Column(db.DateTime, default=datetime.datetime.now)
+    upload_time = db.Column(db.DateTime, default=datetime.datetime.now)

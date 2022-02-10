@@ -11,6 +11,8 @@ from video.permissions import IsAuthenticateCreateVideoPermission, IsOwnerOrRead
 from video.serializer import VideoModelSerializer
 from video.services_views import process_data_to_create_video
 
+from utils.serializers import serializer_data_type
+
 video_urls = Blueprint('video', __name__, url_prefix='/api/video')
 
 
@@ -48,7 +50,7 @@ class VideoRetrieveView(RetrieveViewMixin):
     request = request
     search_fields = ['description', 'title']
     # TODO update according with soft delete
-    search_query = [Video.upload_date.is_not(None)]
+    search_query = [Video.upload_time.is_not(None)]
     annotate_data = [
         {
             'model': Account,
@@ -69,7 +71,7 @@ class VideoListCreateView(ListCreateViewMixin):
     request = request
     search_fields = ['description', 'title']
     # TODO update upload_date change to soft delete
-    filter_query = [Video.upload_date.is_not(None)]
+    filter_query = [Video.upload_time.is_not(None)]
     annotate_data = [
         {
             'model': Account,
@@ -79,11 +81,11 @@ class VideoListCreateView(ListCreateViewMixin):
     permission_classes = [IsAuthenticateCreateVideoPermission]
     serializer = VideoModelSerializer
 
-    def perform_create_update(self, serializer_data: tp.Dict[str, tp.Union[str, int, bool]]) -> tp.Dict[
-        str, tp.Union[str, int, bool]
-    ]:
-        serializer_data['account_id'] = self.request.user.id    # type: ignore
+    def perform_validate(self, data: serializer_data_type):
+        data['account_id'] = self.request.user.id  # type: ignore
+        return data
 
+    def perform_create_update(self, serializer_data: serializer_data_type) -> serializer_data_type:
         bucket_path = process_data_to_create_video(request=self.request)
         serializer_data['bucket_path'] = bucket_path
         return serializer_data
