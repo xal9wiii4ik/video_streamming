@@ -1,8 +1,6 @@
 import typing as tp
 import json
 
-from tests.setup_tests import *
-
 
 def test_tokens(setup: tp.Any) -> None:
     """

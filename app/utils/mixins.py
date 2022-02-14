@@ -260,7 +260,7 @@ class RetrieveViewMixin(BaseMixinsMethodView):
 
     def patch(self, pk: int) -> tp.Tuple[Response, int]:
         serializer = self.serializer(method='PATCH', **self.request.json)
-        serializer_data = serializer.validate_data_before_create()
+        serializer_data = serializer.validate_data_before_create(is_partial_update=True)
         serializer_data = self.perform_create_update(serializer_data=serializer_data)
 
         db.session.query(self.model).filter_by(id=pk).update(serializer_data)

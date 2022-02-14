@@ -1,8 +1,6 @@
 import typing as tp
 import json
 
-from tests.setup_tests import *
-
 
 def test_user_register(setup: tp.Any) -> None:
     """

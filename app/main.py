@@ -76,7 +76,8 @@ def initialize_models() -> None:
     """
 
     logging.info('Starting initialization of models')
-    Migrate(app, db, directory='migrations')
+    migrate = Migrate()
+    migrate.init_app(app, db)
     db.init_app(app)
 
 

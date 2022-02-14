@@ -1,8 +1,6 @@
 import typing as tp
 import json
 
-from tests.setup_tests import *
-
 
 def test_get_video(setup: tp.Any, setup_token_1: tp.Any) -> None:
     """
