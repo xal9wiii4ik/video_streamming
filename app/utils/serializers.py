@@ -53,7 +53,7 @@ class BaseSerializer(BaseModel):
         for field in fields:
             self.remove_fields.append(field)
 
-    def validate_data_before_create(self) -> serializer_data_type:
+    def validate_data_before_create(self, is_partial_update: bool = False) -> serializer_data_type:
         """
         Validate data before create
         Return:
@@ -65,7 +65,10 @@ class BaseSerializer(BaseModel):
             is_key_in = bool(
                 key in self.read_only_fields or key in self.remove_fields or key in self.exclude_fields
             )
-            if (data[key] == '' or data[key] is None) and key in self.required_model_fields:
+            is_required_field = bool(
+                key in self.required_model_fields and not is_partial_update
+            )
+            if (data[key] == '' or data[key] is None) and not is_key_in and is_required_field:
                 raise SerializerValidationError({key: f'{key} must be not empty'})
             if data[key] == '' or data[key] is None or is_key_in:
                 del data[key]
