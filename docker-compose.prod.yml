@@ -11,6 +11,8 @@ services:
     command: python main.py
     volumes:
       - .:/usr/src/
+    env_file:
+      - ./app/.env
 
   db:
     image: postgres:12.0-alpine

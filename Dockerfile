@@ -7,10 +7,12 @@ ENV PYTHONUNBUFFERED 1
 RUN apt-get update
 RUN apt-get install --no-install-recommends -y curl build-essential
 
-COPY . .
-RUN curl https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py > get-poetry
+COPY ./app/entrypoint.sh ./
+COPY ./app ./
+COPY ./pyproject.toml ./
+RUN curl https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py > get-poetry.py
 
-RUN python get-poetry
+RUN python get-poetry.py
 
 ENV PATH = "${PATH}:/root/.poetry/bin"
 
@@ -23,4 +25,5 @@ RUN poetry install
 FROM base as prod
 RUN poetry install --no-dev
 
-CMD ["python", "app/main.py"]
+RUN chmod u+x ./entrypoint.sh
+ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
