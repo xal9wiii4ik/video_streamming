@@ -49,10 +49,10 @@ class BaseMixinsMethodView(MethodView):
         # getting search query
         self.search_query = self.filter_query.copy()
         self.update_search_query()
-        # set default query
-        self.query = db.session.query(self.model).filter(*self.search_query)
         # parse args for url
         self.parse_url_args()
+        # set default query
+        self.query = db.session.query(self.model).filter(*self.search_query)
 
     def update_search_query(self) -> None:
         """
