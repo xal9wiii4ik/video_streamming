@@ -30,9 +30,10 @@ class VideoListCreateView(ListCreateViewMixin):
     ]
     serializer = VideoModelSerializer
 
-    def perform_validate(self, data: serializer_data_type) -> serializer_data_type:
-        data['account_id'] = self.request.user.id  # type: ignore
-        return data
+    def perform_create_update(self, serializer_data: serializer_data_type) -> serializer_data_type:
+        serializer_data['bucket_path'] = 'bucket path will update in future pr'
+        serializer_data['account_id'] = self.request.user.id  # type: ignore
+        return serializer_data
 
 
 video_urls.add_url_rule('/', view_func=VideoListCreateView.as_view('video_list'))
