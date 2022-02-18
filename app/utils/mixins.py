@@ -117,8 +117,10 @@ class BaseMixinsMethodView(MethodView):
         for data in self.annotate_data:  # type: ignore
             for column in data['model'].__table__.columns:  # type: ignore
                 if column.name in data['annotate_fields']:
+                    # annotate query
                     self.query = self.query.add_columns(column.label(column.name))
                     annotate_fields.append(column.name)
+            # join tebles in query
             self.query = self.query.join(data['model'])
         return annotate_fields
 
@@ -131,23 +133,6 @@ class BaseMixinsMethodView(MethodView):
             self.query = self.query.order_by(self.sort)
         else:
             self.query = self.query.limit(self.limit).offset(self.offset)
-
-    def get_model_object_data(self) -> tp.Any:
-        """
-        Get model object data according with annotate query or no
-        Return:
-            dict with data or list with dicts
-        """
-
-        if self._annotate_fields is not None:
-            db.session.refresh(self._model_object[0])
-            serializer = self.serializer(many=False, is_annotate=True, *self._model_object)
-            model_data = serializer.get_annotate_model_objects_data(annotate_fields=self._annotate_fields)
-        else:
-            db.session.refresh(self._model_object)
-            serializer = self.serializer(many=False, **self._model_object.__dict__)
-            model_data = serializer.get_model_objects_data()
-        return model_data
 
     def perform_create_update(self, serializer_data: serializer_data_type) -> serializer_data_type:
         """
@@ -180,12 +165,17 @@ class ListCreateViewMixin(BaseMixinsMethodView):
     search_fields: tp.Optional[tp.List[str]] = None
 
     def get(self) -> tp.Tuple[Response, int]:
+        # annotate query and get annotate fields
         annotate_fields = self.annotate_query() if self.annotate_data is not None else None
 
+        # paginate
         self.paginate_query_set()
 
+        # get objects
         model_objects = self.query.all()
         serializer = self.serializer(many=True, *model_objects)
+
+        # update data if query is annotate
         if annotate_fields is not None:
             data = serializer.get_annotate_model_objects_data(annotate_fields=annotate_fields)
         else:
@@ -194,11 +184,18 @@ class ListCreateViewMixin(BaseMixinsMethodView):
         return jsonify(data), 200
 
     def post(self) -> tp.Tuple[Response, int]:
+        # validate data for creating new object
         data = self.request.json if self.request.json is not None else self.request.form.copy()
         data = self.perform_validate(data=data)
+
+        # get data for creating new object
         serializer = self.serializer(method='POST', **data)
         serializer_data = serializer.validate_data_before_create()
+
+        # update data if this needed
         serializer_data = self.perform_create_update(serializer_data=serializer_data)
+
+        # create model object
         model_data = self.create_model_object(data=serializer_data)
         return jsonify(model_data), 201
 
@@ -211,8 +208,12 @@ class ListCreateViewMixin(BaseMixinsMethodView):
         """
 
         new_object = self.model(**data)
+
         serializer = self.serializer(**new_object.__dict__)
+
         db.session.add(new_object)
         db.session.commit()
-        model_data = serializer.get_model_objects_data()
+        db.session.refresh(new_object)
+
+        model_data = serializer.validate_data_before_get(model_data=new_object.__dict__)
         return model_data

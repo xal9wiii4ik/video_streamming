@@ -65,18 +65,22 @@ class BaseSerializer(BaseModel):
             is_key_in = bool(
                 key in self.read_only_fields or key in self.remove_fields or key in self.exclude_fields
             )
+
             is_required_field = bool(
                 key in self.required_model_fields and not is_partial_update
             )
+
             if (data[key] == '' or data[key] is None) and not is_key_in and is_required_field:
                 raise SerializerValidationError({key: f'{key} must be not empty'})
             if data[key] == '' or data[key] is None or is_key_in:
                 del data[key]
+
         return data
 
-    def validate_data_before_get(self) -> serializer_data_type:
-        data = self.__dict__.copy()
-        for key in self.__dict__:
+    def validate_data_before_get(self, model_data: tp.Optional[serializer_data_type] = None) -> serializer_data_type:
+        data = self.__dict__.copy() if model_data is None else model_data.copy()
+        checking_dict = self.__dict__ if model_data is None else model_data
+        for key in checking_dict:
             if key in self.remove_fields or key in self.write_only_fields:
                 del data[key]
         return data
@@ -96,15 +100,20 @@ class BaseModelSerializer(BaseSerializer):
 
         required_model_fields = []
 
+        # get columns in model
         for column in self.model.__table__.columns:  # type: ignore
+            # getting type of columns
             column_type = type(column.__dict__['type'])
+            # get python types according with sqlalchemy types
             if column_type in SQLALCHEMY_TYPE_TRANSLATE:
                 column_translate_type = SQLALCHEMY_TYPE_TRANSLATE[column_type]
+                # if column type is str will translate max_length unto python type
                 if column_translate_type == str:
                     column_translate_type = constr(max_length=column.__dict__['type'].length)
             else:
                 column_translate_type = None
 
+            # update serializer fields
             self.__fields__.update(
                 {column.name: ModelField.infer(name=column.name,
                                                value=None,
@@ -112,12 +121,14 @@ class BaseModelSerializer(BaseSerializer):
                                                class_validators=None,
                                                config=self.__config__)
                  })
+            # update required model fields
             if not column.nullable and not column.primary_key:
                 required_model_fields.append(column.name)
 
         return required_model_fields
 
     def __init__(self, *args: tp.Any, **kwargs: tp.Any) -> None:
+        # add serializer fields and update required model fields
         required_model_fields = self._update_serializer_fields_according_with_model()
 
         # set many(if many objects will be True)
@@ -173,6 +184,7 @@ class BaseModelSerializer(BaseSerializer):
                                           config=self.__config__)
                  })
         super().__init__(**kwargs)
+        # update required model fields(if column contain nullable=False)
         [self.required_model_fields.append(field) for field in required_model_fields]  # type: ignore
 
     @root_validator
@@ -183,8 +195,12 @@ class BaseModelSerializer(BaseSerializer):
 
         if values.get('method') in ['POST', 'PATCH', 'PUT']:
             for value in values:
+                # if method patch and values is none or empty validation will skip
                 if values.get('method') == 'PATCH' and (values[value] is None or values[value] == ''):
                     continue
+
+                # getting all functions which contains validate_ and validating value
+                # if validate function for this value does not exist will skip
                 try:
                     values[value] = getattr(cls, f'validate_{value}')(cls, values[value])
                 except AttributeError:
