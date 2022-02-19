@@ -10,6 +10,7 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 
 from utils.before_request import validate_body_for_update_create, authenticate
+from utils.data_process import CustomJSONEncoder
 
 from models import db
 
@@ -44,6 +45,9 @@ def register_flask_application(config: tp.Any) -> Flask:
     logging.info('Starting register application')
     app: Flask = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(**config)
+
+    # set custom json encoder
+    app.json_encoder = CustomJSONEncoder
 
     # TODO it can be update to automatic
     app.before_request(authenticate)
