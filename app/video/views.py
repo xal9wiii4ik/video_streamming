@@ -81,7 +81,7 @@ class VideoListCreateView(ListCreateViewMixin):
     permission_classes = [IsAuthenticateCreateVideoPermission]
     serializer = VideoModelSerializer
 
-    def perform_validate(self, data: serializer_data_type):
+    def perform_validate(self, data: serializer_data_type) -> serializer_data_type:
         data['account_id'] = self.request.user.id  # type: ignore
         return data
 

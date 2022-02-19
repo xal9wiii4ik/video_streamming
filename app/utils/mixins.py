@@ -217,7 +217,7 @@ class ListCreateViewMixin(BaseMixinsMethodView):
             data = serializer.get_annotate_model_objects_data(annotate_fields=annotate_fields)
         else:
             data = serializer.get_model_objects_data()
-
+        print(data)
         return jsonify(data), 200
 
     def post(self) -> tp.Tuple[Response, int]:

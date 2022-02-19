@@ -5,13 +5,14 @@ from pydantic import ValidationError
 
 import settings
 
-from flask import Flask, jsonify, Response
+from flask import Flask
 from flask_cors import CORS
 from flask_migrate import Migrate
 
 from utils.before_request import validate_body_for_update_create, authenticate
 
 from models import db
+from utils.data_process import CustomJSONEncoder
 
 from utils.error_handlers import (
     validation_error_handler,
@@ -46,6 +47,9 @@ def register_flask_application(config: tp.Any) -> Flask:
     logging.info('Starting register application')
     app: Flask = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(**config)
+
+    # set custom json encoder
+    app.json_encoder = CustomJSONEncoder
 
     # TODO it can be update to automatic
     app.before_request(authenticate)

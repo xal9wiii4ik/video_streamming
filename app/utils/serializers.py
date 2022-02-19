@@ -157,7 +157,7 @@ class BaseModelSerializer(BaseSerializer):
                                           config=self.__config__)
                  })
         super().__init__(**kwargs)
-        [self.required_model_fields.append(field) for field in required_model_fields]
+        [self.required_model_fields.append(field) for field in required_model_fields]  # type: ignore
 
     @root_validator
     def validate(cls, values: serializer_data_type) -> serializer_data_type:  # type: ignore
