@@ -5,6 +5,7 @@ from utils.mixins import ListCreateViewMixin
 from models import Video, Account
 
 from video.serializer import VideoModelSerializer
+from video.services_views import process_data_to_create_video
 
 from utils.serializers import serializer_data_type
 
@@ -30,8 +31,8 @@ class VideoListCreateView(ListCreateViewMixin):
     ]
     serializer = VideoModelSerializer
 
-    def perform_create_update(self, serializer_data: serializer_data_type) -> serializer_data_type:
-        serializer_data['bucket_path'] = 'bucket path will update in future pr'
+    def perform_create(self, serializer_data: serializer_data_type) -> serializer_data_type:
+        serializer_data['bucket_path'] = process_data_to_create_video(request=self.request)
         serializer_data['account_id'] = self.request.user.id  # type: ignore
         return serializer_data
 

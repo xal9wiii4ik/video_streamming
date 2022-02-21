@@ -156,21 +156,3 @@ def test_get_videos_search(setup: tp.Any, setup_token_1: tp.Any) -> None:
     ]
     assert response_data == expected_data
     assert response.status_code == 200
-
-# def test_create_video(setup: tp.Any, setup_token_1: tp.Any) -> None:
-#     """
-#     Test create video
-#     """
-#
-#     data = {
-#         'title': 'title_3',
-#         'description': 'description_3',
-#         'bucket_path': 'bucket_path_3'
-#     }
-#     json_data = json.dumps(data)
-#
-#     response = setup.test_client().post('/api/video/', data=json_data, headers={
-#         'Authorization': f'Token {setup_token_1}',
-#         'Content-Type': 'application/json'
-#     })
-#     assert response.status_code == 201

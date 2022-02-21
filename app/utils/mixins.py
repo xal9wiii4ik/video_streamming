@@ -136,9 +136,9 @@ class BaseMixinsMethodView(MethodView):
         if self.limit is not None and self.offset is not None:
             self.query = self.query.limit(self.limit).offset(self.offset)
 
-    def perform_create_update(self, serializer_data: serializer_data_type) -> serializer_data_type:
+    def perform_create(self, serializer_data: serializer_data_type) -> serializer_data_type:
         """
-        Perform create or update func(possibility to override creation data)
+        Perform create func(possibility to override creation data)
         Args:
             serializer_data: current data before creating
         Returns:
@@ -195,7 +195,7 @@ class ListCreateViewMixin(BaseMixinsMethodView):
         serializer_data = serializer.validate_data_before_create()
 
         # update data if this needed
-        serializer_data = self.perform_create_update(serializer_data=serializer_data)
+        serializer_data = self.perform_create(serializer_data=serializer_data)
 
         # create model object
         model_data = self.create_model_object(data=serializer_data)
