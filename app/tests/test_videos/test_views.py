@@ -110,7 +110,6 @@ def test_get_videos_sort(setup: tp.Any, setup_token_1: tp.Any) -> None:
             'username': 'username'
         }
     ]
-    print(response_data_1)
     assert response_data_1 == expected_data_1
     assert response_1.status_code == 200
 
