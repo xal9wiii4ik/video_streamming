@@ -120,18 +120,20 @@ class BaseMixinsMethodView(MethodView):
                     # annotate query
                     self.query = self.query.add_columns(column.label(column.name))
                     annotate_fields.append(column.name)
-            # join tebles in query
+            # join tables in query
             self.query = self.query.join(data['model'])
         return annotate_fields
 
-    def paginate_query_set(self) -> None:
+    def sort_paginate_query_set(self) -> None:
         """
-        Make paginate queryset
+        Make paginate and sort queryset
         """
 
-        if self.limit is None or self.offset is None:
-            self.query = self.query.order_by(self.sort)
-        else:
+        # sort queryset
+        self.query = self.query.order_by(self.sort)
+
+        # paginate queryset
+        if self.limit is not None and self.offset is not None:
             self.query = self.query.limit(self.limit).offset(self.offset)
 
     def perform_create_update(self, serializer_data: serializer_data_type) -> serializer_data_type:
@@ -169,7 +171,7 @@ class ListCreateViewMixin(BaseMixinsMethodView):
         annotate_fields = self.annotate_query() if self.annotate_data is not None else None
 
         # paginate
-        self.paginate_query_set()
+        self.sort_paginate_query_set()
 
         # get objects
         model_objects = self.query.all()

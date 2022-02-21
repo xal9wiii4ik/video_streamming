@@ -59,12 +59,12 @@ def test_get_videos_pagination(setup: tp.Any, setup_token_1: tp.Any) -> None:
         del data['upload_time']
     expected_data_1 = [
         {
-            'account_id': 1,
-            'bucket_path': 'bucket_path_1',
-            'description': 'description_1',
-            'id': 1,
-            'title': 'title_1',
-            'username': 'username'
+            'account_id': 2,
+            'bucket_path': 'bucket_path_2',
+            'description': 'description_2',
+            'id': 2,
+            'title': 'title_2',
+            'username': 'username_2'
         }
     ]
     assert response_data_1 == expected_data_1
@@ -77,12 +77,12 @@ def test_get_videos_pagination(setup: tp.Any, setup_token_1: tp.Any) -> None:
         del data['upload_time']
     expected_data_2 = [
         {
-            'account_id': 2,
-            'bucket_path': 'bucket_path_2',
-            'description': 'description_2',
-            'id': 2,
-            'title': 'title_2',
-            'username': 'username_2'
+            'account_id': 1,
+            'bucket_path': 'bucket_path_1',
+            'description': 'description_1',
+            'id': 1,
+            'title': 'title_1',
+            'username': 'username'
         }
     ]
     assert response_data_2 == expected_data_2
@@ -94,7 +94,7 @@ def test_get_videos_sort(setup: tp.Any, setup_token_1: tp.Any) -> None:
     Test get videos with sorting
     """
 
-    response_1 = setup.test_client().get('/api/video/?sort=id&sort_type=asc', headers={
+    response_1 = setup.test_client().get('/api/video/?sort=id&sort_type=asc&limit=1&offset=0', headers={
         'Authorization': f'Token {setup_token_1}'
     })
     response_data_1 = response_1.json
@@ -108,20 +108,13 @@ def test_get_videos_sort(setup: tp.Any, setup_token_1: tp.Any) -> None:
             'id': 1,
             'title': 'title_1',
             'username': 'username'
-        },
-        {
-            'account_id': 2,
-            'bucket_path': 'bucket_path_2',
-            'description': 'description_2',
-            'id': 2,
-            'title': 'title_2',
-            'username': 'username_2'
         }
     ]
+    print(response_data_1)
     assert response_data_1 == expected_data_1
     assert response_1.status_code == 200
 
-    response_2 = setup.test_client().get('/api/video/?sort=id&sort_type=desc', headers={
+    response_2 = setup.test_client().get('/api/video/?sort=id&sort_type=desc&limit=1&offset=0', headers={
         'Authorization': f'Token {setup_token_1}'
     })
     response_data_2 = response_2.json
@@ -135,14 +128,6 @@ def test_get_videos_sort(setup: tp.Any, setup_token_1: tp.Any) -> None:
             'id': 2,
             'title': 'title_2',
             'username': 'username_2'
-        },
-        {
-            'account_id': 1,
-            'bucket_path': 'bucket_path_1',
-            'description': 'description_1',
-            'id': 1,
-            'title': 'title_1',
-            'username': 'username'
         }
     ]
     assert response_data_2 == expected_data_2
