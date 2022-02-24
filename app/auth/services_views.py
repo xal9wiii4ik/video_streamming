@@ -18,19 +18,25 @@ from utils.exceptions import SerializerValidationError
 from utils.serializers import serializer_data_type
 
 
-def create_tokens(data: serializer_data_type) -> tp.Dict[str, str]:
+def create_tokens(data: serializer_data_type, user_pk: tp.Optional[int] = None) -> serializer_data_type:
     """
     Create tokens
     Args:
         data: dict with username and password
+        user_pk: user pk
     Return:
         dict with access and refresh token
     """
 
     access_token = create_token(token_type='access', data=data.copy())
     refresh_token = create_token(token_type='refresh', data=data.copy())
-    return_data = ({'refresh_token': refresh_token, 'access_token': access_token})
-
+    return_data = {
+        'refresh_token': refresh_token,
+        'access_token': access_token,
+        'access_token_expire': ACCESS_TOKEN_EXPIRE_MINUTES,
+    }
+    if user_pk is not None:
+        return_data['user_pk'] = user_pk
     return return_data
 
 
@@ -58,18 +64,18 @@ def create_token(token_type: str, data: serializer_data_type) -> str:
     }
 
     if helping_data[token_type]['expire'] is not None:
-        helping_data['expire'] = datetime.utcnow() + timedelta(minutes=float(helping_data[token_type]['expire']))
+        expire = datetime.utcnow() + timedelta(minutes=float(helping_data[token_type]['expire']))
     else:
-        helping_data['expire'] = datetime.utcnow() + timedelta(
+        expire = datetime.utcnow() + timedelta(
             minutes=float(helping_data[token_type]['default_expire'])
         )
 
-    data.update({'exp': helping_data['expire'], 'sub': helping_data[token_type]['subject']})
+    data.update({'exp': expire, 'sub': helping_data[token_type]['subject']})
     encoded_jwt: str = jwt.encode(payload=data, key=SECRET_KEY, algorithm=TOKEN_ALGORITHM)  # type: ignore
     return encoded_jwt
 
 
-def generate_access_token_from_refresh(refresh_token: str) -> tp.Dict[str, str]:
+def generate_access_token_from_refresh(refresh_token: str) -> serializer_data_type:
     """
     Generate access token from refresh token
     Args:
@@ -86,7 +92,8 @@ def generate_access_token_from_refresh(refresh_token: str) -> tp.Dict[str, str]:
 
         return_data = create_tokens(data={
             'username': payload["username"],
-            'password': payload["password"]
+            'password': payload["password"],
+            'access_token_expire': ACCESS_TOKEN_EXPIRE_MINUTES
         })
         return return_data
     except Exception:

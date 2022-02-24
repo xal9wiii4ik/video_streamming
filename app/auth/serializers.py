@@ -3,6 +3,7 @@ import typing as tp
 from pydantic import root_validator
 
 from models import Account
+
 from utils.exceptions import SerializerValidationError
 from utils.serializers import BaseSerializer, serializer_data_type
 from utils.data_process import make_password
@@ -26,7 +27,7 @@ class AccessTokenSerializer(BaseSerializer):
         """
 
         accounts = Account.query.filter_by(username=data.get('username')).all()
-        if not any(accounts):
+        if not accounts:
             raise SerializerValidationError({'error': 'Account does not exist'})
 
         account = accounts[0]

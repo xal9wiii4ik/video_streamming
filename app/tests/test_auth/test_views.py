@@ -15,7 +15,9 @@ def test_tokens(setup: tp.Any) -> None:
 
     response = setup.test_client().post('/auth/token/', data=json_data, headers={'Content-Type': 'application/json'})
     assert response.status_code == 200
+    print(response.json)
 
+    print(response.json.get('refresh_token'))
     data_1 = {
         'refresh_token': response.json.get('refresh_token')
     }
@@ -25,4 +27,5 @@ def test_tokens(setup: tp.Any) -> None:
         data=json_data_1,
         headers={'Content-Type': 'application/json'}
     )
+    print(response_1.json)
     assert response_1.status_code == 200

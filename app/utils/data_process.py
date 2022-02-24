@@ -1,5 +1,6 @@
 import hashlib
 import typing as tp
+from typing import Iterable
 
 from flask.json import JSONEncoder
 
@@ -35,12 +36,8 @@ class CustomJSONEncoder(JSONEncoder):
     """
 
     def default(self, obj: tp.Any) -> tp.Any:
-        try:
-            if isinstance(obj, date):
-                return obj.isoformat()
-            iterable = iter(obj)
-        except TypeError:
-            pass
-        else:
-            return list(iterable)
+        if isinstance(obj, date):
+            return obj.isoformat()
+        if isinstance(obj, Iterable):
+            return list(iter(obj))
         return JSONEncoder.default(self, obj)

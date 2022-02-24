@@ -20,7 +20,16 @@ def test_user_register(setup: tp.Any) -> None:
     response = setup.test_client().post('/api/account/register/',
                                         data=json_data,
                                         headers={'Content-Type': 'application/json'})
-    assert response.status_code == 200
+    assert response.status_code == 201
+    expected_data = {
+        'id': 3,
+        'username': 'xal9',
+        'email': 'email@mail.ru',
+        'first_name': 'first_name',
+        'last_name': 'first_name',
+        'is_staff': False
+    }
+    assert expected_data == response.json
 
 
 def test_user_register_invalid_password(setup: tp.Any) -> None:
