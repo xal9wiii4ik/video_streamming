@@ -1,5 +1,4 @@
 import typing as tp
-import settings
 
 from flask import Response, jsonify, Blueprint, request
 from flask.views import MethodView
@@ -23,9 +22,7 @@ class GetTokensView(MethodView):
     def post(self) -> tp.Tuple[Response, int]:
         serializer = AccessTokenSerializer(**request.json)  # type: ignore
         serializer_data = serializer.validate_data_before_create()
-        tokens_data = create_tokens(data=serializer_data)
-        tokens_data.update({'access_token_expire': settings.ACCESS_TOKEN_EXPIRE_MINUTES})  # type: ignore
-        tokens_data.update({'user_pk': serializer.user_pk})  # type: ignore
+        tokens_data = create_tokens(data=serializer_data, user_pk=serializer.user_pk)
         return jsonify(tokens_data), 200
 
 
@@ -40,9 +37,8 @@ class RefreshTokenView(MethodView):
         serializer = RefreshTokenSerializer(**request.json)  # type: ignore
         serializer_data = serializer.validate_data_before_create()
         tokens_data = generate_access_token_from_refresh(
-            refresh_token=serializer_data.get('refresh_token')
+            refresh_token=serializer_data['refresh_token']
         )
-        tokens_data.update({'access_token_expire': settings.ACCESS_TOKEN_EXPIRE_MINUTES})  # type: ignore
         return jsonify(tokens_data), 200
 
 

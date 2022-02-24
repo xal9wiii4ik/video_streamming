@@ -1,14 +1,37 @@
 from pydantic import constr, validator, root_validator
 
-from models import Account
+from sqlalchemy import exists
+
+from models import Account, db
 
 from utils.exceptions import SerializerValidationError
 from utils.serializers import BaseSerializer, BaseModelSerializer, serializer_data_type
 from utils.data_process import make_password
 
 
+def validate_email(email: str) -> str:
+    """
+    Help function for validating email
+    Args:
+        email: current email
+    Returns:
+         email
+    """
+
+    if '@' not in email or '.' not in email:
+        raise ValueError('Invalid email')
+
+    is_exist = db.session().query(exists().where(Account.username == email)).scalar()
+    if is_exist:
+        raise SerializerValidationError({'error': 'Account with this email already exist'})
+
+    return email
+
+
 class RegisterUserSerializer(BaseSerializer):
     """ Serializer for register users """
+
+    write_only_fields = ['password', 'repeat_password']
 
     username: constr(max_length=100)  # type: ignore
     password: constr(max_length=500)  # type: ignore
@@ -18,26 +41,15 @@ class RegisterUserSerializer(BaseSerializer):
     last_name: constr(max_length=100)  # type: ignore
 
     @validator('username')
-    def validate_username(cls, value: str) -> str:
-        from models import Account
-
-        accounts = Account.query.filter_by(username=value).all()
-        if any(accounts):
+    def validate_username(cls, username: str) -> str:
+        is_exist = db.session().query(exists().where(Account.username == username)).scalar()
+        if is_exist:
             raise SerializerValidationError({'error': 'Account with this username already exist'})
-        return value
+        return username
 
     @validator('email')
-    def validate_email(cls, value: str) -> str:
-        from models import Account
-
-        if value.find('@') == -1 or value.find('.') == -1:
-            raise ValueError('Invalid email')
-
-        accounts = Account.query.filter_by(email=value).all()
-        if any(accounts):
-            raise SerializerValidationError({'error': 'Account with this email already exist'})
-
-        return value
+    def validate_email(cls, email: str) -> str:
+        return validate_email(email=email)
 
     @root_validator(pre=True)
     def validate_all_values(cls, data: serializer_data_type) -> serializer_data_type:
@@ -66,17 +78,8 @@ class AccountModelSerializer(BaseModelSerializer):
     write_only_fields = ['password']
     model = Account
 
-    def validate_email(self, value: str) -> str:
-        from models import Account
-
-        if value.find('@') == -1 or value.find('.') == -1:
-            raise SerializerValidationError({'error': 'Invalid email'})
-
-        accounts = Account.query.filter_by(email=value).all()
-        if any(accounts):
-            raise SerializerValidationError({'error': 'Account with this email already exist'})
-
-        return value
+    def validate_email(self, email: str) -> str:
+        return validate_email(email=email)
 
     def validate_password(self, value: str) -> str:
         if len(value) <= 8:

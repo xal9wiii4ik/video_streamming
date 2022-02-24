@@ -23,7 +23,7 @@ class RegisterAccountView(MethodView):
         serializer.update_remove_fields(fields=['repeat_password'])
         serializer_data = serializer.validate_data_before_create()
         model_data = create_new_account(data=serializer_data)
-        return jsonify(model_data), 200
+        return jsonify(model_data), 201
 
 
 class AccountListView(ListCreateViewMixin):

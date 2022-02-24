@@ -9,6 +9,10 @@ from flask import Flask
 from flask_cors import CORS
 from flask_migrate import Migrate
 
+from auth.views import auth_urls
+from account.views import account_urls
+from video.views import video_urls
+
 from utils.before_request import validate_body_for_update_create, authenticate
 from utils.data_process import CustomJSONEncoder
 
@@ -37,10 +41,6 @@ def register_flask_application(config: tp.Any) -> Flask:
     Returns:
         current flask app
     """
-
-    from auth.views import auth_urls
-    from account.views import account_urls
-    from video.views import video_urls
 
     logging.info('Starting register application')
     app: Flask = Flask(__name__, instance_relative_config=True)
