@@ -2,5 +2,3 @@
 
 flask db upgrade
 python main.py
-
-exec "$@"

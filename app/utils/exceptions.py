@@ -1,37 +1,42 @@
 import typing as tp
 
 
-class LimitOffsetError(Exception):
+class BaseErrorException(Exception):
+    """
+    Base exception class for handler exceptions
+    """
+
+    def __init__(self, message: tp.Union[str, tp.Dict[str, str]]) -> None:
+        self.message = message
+
+
+class LimitOffsetError(BaseErrorException):
     """
     Exception class for limit and offset
     """
 
-    def __init__(self, message: tp.Union[str, tp.Dict[str, str]]) -> None:
-        self.message = message
+    pass
 
 
-class SortException(Exception):
+class SortException(BaseErrorException):
     """
     Exception class sort and sort_type
     """
 
-    def __init__(self, message: tp.Union[str, tp.Dict[str, str]]) -> None:
-        self.message = message
+    pass
 
 
-class EmptyBodyException(Exception):
+class EmptyBodyException(BaseErrorException):
     """
     Exception for empty body if this create or update
     """
 
-    def __init__(self, message: tp.Union[str, tp.Dict[str, str]]) -> None:
-        self.message = message
+    pass
 
 
-class SerializerValidationError(Exception):
+class SerializerValidationError(BaseErrorException):
     """
     Exception for serializer
     """
 
-    def __init__(self, message: tp.Union[str, tp.Dict[str, str]]) -> None:
-        self.message = message
+    pass

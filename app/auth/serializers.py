@@ -26,11 +26,11 @@ class AccessTokenSerializer(BaseSerializer):
         Validate all values
         """
 
-        accounts = Account.query.filter_by(username=data.get('username')).all()
-        if not accounts:
+        account = Account.query.filter_by(username=data.get('username')).one_or_none()
+
+        if account is None:
             raise SerializerValidationError({'error': 'Account does not exist'})
 
-        account = accounts[0]
         account_password = account.password
         data['user_pk'] = account.id
 
